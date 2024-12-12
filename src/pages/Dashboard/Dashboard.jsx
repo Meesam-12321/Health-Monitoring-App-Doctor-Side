@@ -1,5 +1,5 @@
 import React from 'react';
-import { FaCalendarAlt, FaUserFriends, FaBell, FaChartLine } from 'react-icons/fa';
+import { FaCalendarAlt, FaUserFriends, FaBell, FaFileMedical } from 'react-icons/fa';
 
 const Dashboard = () => {
   // Static data for display
@@ -7,7 +7,7 @@ const Dashboard = () => {
     { title: 'Total Patients', value: 45, icon: <FaUserFriends />, color: 'bg-blue-500' },
     { title: 'Appointments Today', value: 8, icon: <FaCalendarAlt />, color: 'bg-green-500' },
     { title: 'Pending Alerts', value: 3, icon: <FaBell />, color: 'bg-yellow-500' },
-    { title: 'Performance', value: '85%', icon: <FaChartLine />, color: 'bg-purple-500' },
+    { title: 'Prescriptions Issued', value: 120, icon: <FaFileMedical />, color: 'bg-red-500' },
   ];
 
   const appointments = [
@@ -41,7 +41,8 @@ const Dashboard = () => {
         {stats.map((stat, index) => (
           <div
             key={index}
-            className={`flex items-center p-4 rounded-lg shadow-md ${stat.color}`}
+            className={`flex items-center p-4 rounded-lg shadow-md transform transition-transform duration-300 hover:scale-105 ${stat.color}`}
+            title={`Click to view more details about ${stat.title}`}
           >
             <div className="text-4xl mr-4">{stat.icon}</div>
             <div>
@@ -61,14 +62,27 @@ const Dashboard = () => {
               <th className="px-4 py-2 border-b border-gray-700">Patient</th>
               <th className="px-4 py-2 border-b border-gray-700">Time</th>
               <th className="px-4 py-2 border-b border-gray-700">Condition</th>
+              <th className="px-4 py-2 border-b border-gray-700">Actions</th>
             </tr>
           </thead>
           <tbody>
-            {appointments.map((appointment) => (
-              <tr key={appointment.id} className="hover:bg-gray-700">
+            {appointments.map((appointment, index) => (
+              <tr
+                key={appointment.id}
+                className={`${
+                  index === 0
+                    ? 'bg-green-600 text-white'
+                    : 'hover:bg-gray-700'
+                }`}
+              >
                 <td className="px-4 py-2 border-b border-gray-700">{appointment.patientName}</td>
                 <td className="px-4 py-2 border-b border-gray-700">{appointment.time}</td>
                 <td className="px-4 py-2 border-b border-gray-700">{appointment.condition}</td>
+                <td className="px-4 py-2 border-b border-gray-700">
+                  <button className="px-3 py-1 bg-blue-500 rounded-lg text-white text-sm hover:bg-blue-700">
+                    View Details
+                  </button>
+                </td>
               </tr>
             ))}
           </tbody>

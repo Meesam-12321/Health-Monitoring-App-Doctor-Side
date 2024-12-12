@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { NavLink } from "react-router-dom";
 
 const Navbar = () => {
   const [darkMode, setDarkMode] = useState(false);
@@ -30,24 +31,42 @@ const Navbar = () => {
 
           {/* Navigation Links */}
           <div className="hidden md:flex space-x-4">
-            <a
-              href="#"
-              className="text-gray-800 dark:text-gray-300 hover:text-blue-500 dark:hover:text-blue-400 px-3 py-2 rounded-md text-sm font-medium"
+            <NavLink
+              to="/dashboard"
+              className={({ isActive }) =>
+                `px-3 py-2 rounded-md text-sm font-medium ${
+                  isActive
+                    ? "text-blue-500 dark:text-blue-400"
+                    : "text-gray-800 dark:text-gray-300 hover:text-blue-500 dark:hover:text-blue-400"
+                }`
+              }
             >
               Dashboard
-            </a>
-            <a
-              href="#"
-              className="text-gray-800 dark:text-gray-300 hover:text-blue-500 dark:hover:text-blue-400 px-3 py-2 rounded-md text-sm font-medium"
+            </NavLink>
+            <NavLink
+              to="/appointments"
+              className={({ isActive }) =>
+                `px-3 py-2 rounded-md text-sm font-medium ${
+                  isActive
+                    ? "text-blue-500 dark:text-blue-400"
+                    : "text-gray-800 dark:text-gray-300 hover:text-blue-500 dark:hover:text-blue-400"
+                }`
+              }
             >
               Appointments
-            </a>
-            <a
-              href="#"
-              className="text-gray-800 dark:text-gray-300 hover:text-blue-500 dark:hover:text-blue-400 px-3 py-2 rounded-md text-sm font-medium"
+            </NavLink>
+            <NavLink
+              to="/patients"
+              className={({ isActive }) =>
+                `px-3 py-2 rounded-md text-sm font-medium ${
+                  isActive
+                    ? "text-blue-500 dark:text-blue-400"
+                    : "text-gray-800 dark:text-gray-300 hover:text-blue-500 dark:hover:text-blue-400"
+                }`
+              }
             >
               Patients
-            </a>
+            </NavLink>
           </div>
 
           {/* Right Section */}
@@ -55,38 +74,44 @@ const Navbar = () => {
             {/* Dark Mode Toggle */}
             <button
               onClick={toggleDarkMode}
-              className="text-gray-800 dark:text-gray-300 hover:text-blue-500 dark:hover:text-blue-400"
+              className="flex items-center px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition duration-300"
             >
               {darkMode ? (
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-6 w-6"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 3v1m0 16v1m8.66-8.66h-1m-14.14 0h-1m1.93-6.07l-.71-.71m12.02 12.02l-.71-.71m.71-12.02l-.71.71m-12.02 12.02l-.71.71M12 5a7 7 0 100 14 7 7 0 000-14z"
-                  />
-                </svg>
+                <>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 3v1m0 16v1m8.66-8.66h-1m-14.14 0h-1m1.93-6.07l-.71-.71m12.02 12.02l-.71-.71m.71-12.02l-.71.71m-12.02 12.02l-.71.71M12 5a7 7 0 100 14 7 7 0 000-14z"
+                    />
+                  </svg>
+                  <span className="ml-2">Light Mode</span>
+                </>
               ) : (
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-6 w-6"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 3c4.97 0 9 4.03 9 9s-4.03 9-9 9a9 9 0 010-18z"
-                  />
-                </svg>
+                <>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 3c4.97 0 9 4.03 9 9s-4.03 9-9 9a9 9 0 010-18z"
+                    />
+                  </svg>
+                  <span className="ml-2">Dark Mode</span>
+                </>
               )}
             </button>
 
