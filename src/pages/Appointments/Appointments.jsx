@@ -35,6 +35,7 @@ const Appointments = () => {
 
   const [filterDate, setFilterDate] = useState('');
   const [appointments, setAppointments] = useState(appointmentsData);
+  const [selectedPatientId, setSelectedPatientId] = useState(null); // State for selected patient
 
   // Handle date filtering
   const handleFilterChange = (e) => {
@@ -47,6 +48,11 @@ const Appointments = () => {
     } else {
       setAppointments(appointmentsData);
     }
+  };
+
+  // Handle row click
+  const handleRowClick = (id) => {
+    setSelectedPatientId(id);
   };
 
   return (
@@ -82,13 +88,27 @@ const Appointments = () => {
           <tbody>
             {appointments.length > 0 ? (
               appointments.map((appointment) => (
-                <tr key={appointment.id} className="hover:bg-gray-700">
+                <tr
+                  key={appointment.id}
+                  onClick={() => handleRowClick(appointment.id)}
+                  className={`cursor-pointer ${
+                    selectedPatientId === appointment.id
+                      ? 'bg-green-600 text-white' // Green background and white text for the selected patient
+                      : 'hover:bg-gray-700'
+                  }`}
+                >
                   <td className="px-4 py-2 border-b border-gray-700">
                     {appointment.patientName}
                   </td>
-                  <td className="px-4 py-2 border-b border-gray-700">{appointment.date}</td>
-                  <td className="px-4 py-2 border-b border-gray-700">{appointment.time}</td>
-                  <td className="px-4 py-2 border-b border-gray-700">{appointment.condition}</td>
+                  <td className="px-4 py-2 border-b border-gray-700">
+                    {appointment.date}
+                  </td>
+                  <td className="px-4 py-2 border-b border-gray-700">
+                    {appointment.time}
+                  </td>
+                  <td className="px-4 py-2 border-b border-gray-700">
+                    {appointment.condition}
+                  </td>
                 </tr>
               ))
             ) : (
