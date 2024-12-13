@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
+import { FaPaperPlane } from 'react-icons/fa';
 
 const ChatPage = () => {
   const { patientId } = useParams();
@@ -34,13 +35,15 @@ const ChatPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 dark:bg-gray-900 p-8">
-      <div className="max-w-4xl mx-auto bg-white dark:bg-gray-800 p-8 rounded-lg shadow-xl border-2 border-gray-600">
-        <h1 className="text-4xl font-bold text-center text-gray-800 dark:text-white mb-6">Chat with Patient</h1>
-
-        <div className="h-96 overflow-y-auto bg-gray-50 dark:bg-gray-700 p-6 rounded-lg border-2 border-gray-600 shadow-lg">
+    <div className="flex flex-col w-full h-full bg-gray-900">
+      <header className="flex items-center justify-between bg-gray-800 px-6 py-4 shadow-md">
+        <h1 className="text-xl font-bold text-white">Chat with Patient</h1>
+        <span className="text-gray-400">Patient ID: {patientId}</span>
+      </header>
+      <main className="flex-1 flex flex-col p-4">
+        <div className="flex-1 overflow-y-auto bg-gray-800 p-4 rounded-lg shadow-md">
           {isLoading ? (
-            <div className="text-center text-gray-500 dark:text-gray-300">Loading chat...</div>
+            <div className="text-center text-gray-400">Loading chat...</div>
           ) : (
             <div>
               {messages.map((message) => (
@@ -48,8 +51,14 @@ const ChatPage = () => {
                   key={message.id}
                   className={`flex mb-4 ${message.sender === 'doctor' ? 'justify-end' : 'justify-start'}`}
                 >
-                  <div className={`max-w-xs rounded-lg px-4 py-3 ${message.sender === 'doctor' ? 'bg-blue-600 text-white' : 'bg-green-600 text-white'}`}>
-                    <p className="text-sm">{message.text}</p>
+                  <div
+                    className={`max-w-xs px-4 py-3 text-sm rounded-lg shadow-md ${
+                      message.sender === 'doctor'
+                        ? 'bg-blue-600 text-white'
+                        : 'bg-green-600 text-white'
+                    }`}
+                  >
+                    <p>{message.text}</p>
                     <span className="block text-xs mt-1 text-gray-300">{message.timestamp}</span>
                   </div>
                 </div>
@@ -57,23 +66,22 @@ const ChatPage = () => {
             </div>
           )}
         </div>
-
-        <div className="mt-6 flex items-center">
+        <div className="mt-4 flex items-center">
           <input
             type="text"
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
-            className="w-full px-4 py-3 bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className="flex-1 px-4 py-2 bg-gray-700 text-white rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="Type your message..."
           />
           <button
             onClick={handleSendMessage}
-            className="ml-4 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className="ml-4 px-6 py-2 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 flex items-center"
           >
-            Send
+            <FaPaperPlane className="mr-2" /> Send
           </button>
         </div>
-      </div>
+      </main>
     </div>
   );
 };
