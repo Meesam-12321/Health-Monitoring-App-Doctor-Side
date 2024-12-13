@@ -1,5 +1,6 @@
 import React from 'react';
 import { FaCalendarAlt, FaUserFriends, FaBell, FaFileMedical } from 'react-icons/fa';
+import { Link } from 'react-router-dom'; // Import Link from React Router
 
 const Dashboard = () => {
   // Static data for display
@@ -79,9 +80,13 @@ const Dashboard = () => {
                 <td className="px-4 py-2 border-b border-gray-700">{appointment.time}</td>
                 <td className="px-4 py-2 border-b border-gray-700">{appointment.condition}</td>
                 <td className="px-4 py-2 border-b border-gray-700">
-                  <button className="px-3 py-1 bg-blue-500 rounded-lg text-white text-sm hover:bg-blue-700">
+                  {/* Updated View Details Button with Link */}
+                  <Link
+                    to={`/patients/${appointment.id}`} // Corrected path to match the route
+                    className="px-3 py-1 bg-blue-500 rounded-lg text-white text-sm hover:bg-blue-700"
+                  >
                     View Details
-                  </button>
+                  </Link>
                 </td>
               </tr>
             ))}

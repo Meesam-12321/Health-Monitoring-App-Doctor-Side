@@ -3,5 +3,6 @@ module.exports = {
   theme: {
     extend: {},
   },
+  darkMode: "class", // Enable dark mode support via the 'class' strategy
   plugins: [],
 };

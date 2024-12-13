@@ -9,7 +9,6 @@ const DoctorLogin = () => {
 
   const navigate = useNavigate();
 
-  // Handle form field changes
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
@@ -18,14 +17,11 @@ const DoctorLogin = () => {
     }));
   };
 
-  // Handle form submission
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // Static login logic for now (you can replace it with real authentication)
     if (formData.username === 'doctor' && formData.password === 'password') {
       console.log('Login Successful');
-      // Navigate to doctor's dashboard or main page after successful login
       navigate('/dashboard');
     } else {
       console.log('Invalid credentials');
@@ -34,9 +30,9 @@ const DoctorLogin = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-900 p-8">
-      <div className="max-w-4xl mx-auto bg-gray-800 p-8 rounded-lg shadow-lg">
-        <h1 className="text-3xl font-bold text-center text-blue-400 mb-8">Doctor Login</h1>
+    <div className="flex justify-center items-center min-h-screen bg-gray-900">
+      <div className="w-full max-w-lg bg-gray-800 p-6 rounded-lg shadow-lg">
+        <h1 className="text-4xl font-bold text-center text-blue-400 mb-6">Doctor Login</h1>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Username */}
@@ -48,7 +44,8 @@ const DoctorLogin = () => {
               name="username"
               value={formData.username}
               onChange={handleChange}
-              className="px-4 py-2 bg-gray-700 text-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className="px-4 py-2 bg-gray-700 text-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50"
+              placeholder="Enter your username"
               required
             />
           </div>
@@ -62,7 +59,8 @@ const DoctorLogin = () => {
               name="password"
               value={formData.password}
               onChange={handleChange}
-              className="px-4 py-2 bg-gray-700 text-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className="px-4 py-2 bg-gray-700 text-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50"
+              placeholder="Enter your password"
               required
             />
           </div>
@@ -71,10 +69,20 @@ const DoctorLogin = () => {
           <div className="mt-6">
             <button
               type="submit"
-              className="w-full py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className="w-full py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50"
             >
               Login
             </button>
+          </div>
+
+          {/* Optional Links */}
+          <div className="mt-4 text-center">
+            <p className="text-gray-400">
+              Don't have an account?{' '}
+              <a href="/register" className="text-blue-400 hover:underline">
+                Register here
+              </a>
+            </p>
           </div>
         </form>
       </div>

@@ -52,13 +52,13 @@ const Patients = () => {
   };
 
   return (
-    <div className="p-6 bg-gray-900 min-h-screen text-white">
+    <div className="flex flex-col items-center justify-center bg-gray-900 min-h-screen">
       {/* Header */}
-      <h1 className="text-3xl font-bold mb-6">Patients</h1>
+      <h1 className="text-3xl font-bold text-white mb-6">Patients</h1>
 
       {/* Search Bar */}
-      <div className="mb-6">
-        <label htmlFor="search" className="block text-lg font-medium mb-2">
+      <div className="w-full max-w-4xl mb-6">
+        <label htmlFor="search" className="block text-lg font-medium text-white mb-2">
           Search Patients:
         </label>
         <input
@@ -72,7 +72,7 @@ const Patients = () => {
       </div>
 
       {/* Patients Table */}
-      <div className="bg-gray-800 p-6 rounded-lg shadow-md">
+      <div className="w-full max-w-4xl bg-gray-800 p-6 rounded-lg shadow-md">
         <table className="w-full text-left table-auto">
           <thead>
             <tr>

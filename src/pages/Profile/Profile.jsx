@@ -26,14 +26,10 @@ const Profile = () => {
     }));
   };
 
-  // Toggle edit mode
+  // Toggle edit mode (this will now navigate to EditProfile page)
   const toggleEdit = () => {
-    if (isEditing) {
-      // Save the updated data (you can replace this with an API call)
-      setDoctorData(formData);
-      alert('Profile updated successfully');
-    }
-    setIsEditing(!isEditing);
+    // Navigate to EditProfile page when the button is clicked
+    navigate('/profile/edit');  // Adjusted to match the route in your App.jsx
   };
 
   return (

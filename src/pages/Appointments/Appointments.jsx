@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 
 const Appointments = () => {
   // Static data
@@ -37,6 +38,8 @@ const Appointments = () => {
   const [appointments, setAppointments] = useState(appointmentsData);
   const [selectedPatientId, setSelectedPatientId] = useState(null); // State for selected patient
 
+  const navigate = useNavigate(); // Initialize useNavigate
+
   // Handle date filtering
   const handleFilterChange = (e) => {
     const selectedDate = e.target.value;
@@ -53,6 +56,7 @@ const Appointments = () => {
   // Handle row click
   const handleRowClick = (id) => {
     setSelectedPatientId(id);
+    navigate(`/appointments/${id}`); // Navigate to the AppointmentDetails page with the patient id
   };
 
   return (
