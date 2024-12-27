@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate
+import { useNavigate } from 'react-router-dom';
 
 const Appointments = () => {
   // Static data
@@ -36,9 +36,9 @@ const Appointments = () => {
 
   const [filterDate, setFilterDate] = useState('');
   const [appointments, setAppointments] = useState(appointmentsData);
-  const [selectedPatientId, setSelectedPatientId] = useState(null); // State for selected patient
+  const [selectedPatientId, setSelectedPatientId] = useState(null);
 
-  const navigate = useNavigate(); // Initialize useNavigate
+  const navigate = useNavigate();
 
   // Handle date filtering
   const handleFilterChange = (e) => {
@@ -56,11 +56,11 @@ const Appointments = () => {
   // Handle row click
   const handleRowClick = (id) => {
     setSelectedPatientId(id);
-    navigate(`/appointments/${id}`); // Navigate to the AppointmentDetails page with the patient id
+    navigate(`/appointments/${id}`);
   };
 
   return (
-    <div className="p-6 bg-gray-900 min-h-screen text-white">
+    <div className="p-6 min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white">
       {/* Header */}
       <h1 className="text-3xl font-bold mb-6">Appointments</h1>
 
@@ -74,19 +74,27 @@ const Appointments = () => {
           id="filterDate"
           value={filterDate}
           onChange={handleFilterChange}
-          className="p-2 rounded-lg bg-gray-800 text-white border border-gray-600"
+          className="p-2 rounded-lg bg-gray-200 dark:bg-gray-800 text-gray-900 dark:text-white border border-gray-400 dark:border-gray-600"
         />
       </div>
 
       {/* Appointments Table */}
-      <div className="bg-gray-800 p-6 rounded-lg shadow-md">
+      <div className="p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md">
         <table className="w-full text-left table-auto">
           <thead>
-            <tr>
-              <th className="px-4 py-2 border-b border-gray-700">Patient</th>
-              <th className="px-4 py-2 border-b border-gray-700">Date</th>
-              <th className="px-4 py-2 border-b border-gray-700">Time</th>
-              <th className="px-4 py-2 border-b border-gray-700">Condition</th>
+            <tr className="bg-gray-200 dark:bg-gray-700">
+              <th className="px-4 py-2 border-b border-gray-300 dark:border-gray-600">
+                Patient
+              </th>
+              <th className="px-4 py-2 border-b border-gray-300 dark:border-gray-600">
+                Date
+              </th>
+              <th className="px-4 py-2 border-b border-gray-300 dark:border-gray-600">
+                Time
+              </th>
+              <th className="px-4 py-2 border-b border-gray-300 dark:border-gray-600">
+                Condition
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -95,22 +103,22 @@ const Appointments = () => {
                 <tr
                   key={appointment.id}
                   onClick={() => handleRowClick(appointment.id)}
-                  className={`cursor-pointer ${
+                  className={`cursor-pointer transition-all ${
                     selectedPatientId === appointment.id
-                      ? 'bg-green-600 text-white' // Green background and white text for the selected patient
-                      : 'hover:bg-gray-700'
+                      ? 'bg-green-500 dark:bg-green-600 text-white'
+                      : 'hover:bg-gray-100 dark:hover:bg-gray-700'
                   }`}
                 >
-                  <td className="px-4 py-2 border-b border-gray-700">
+                  <td className="px-4 py-2 border-b border-gray-300 dark:border-gray-600">
                     {appointment.patientName}
                   </td>
-                  <td className="px-4 py-2 border-b border-gray-700">
+                  <td className="px-4 py-2 border-b border-gray-300 dark:border-gray-600">
                     {appointment.date}
                   </td>
-                  <td className="px-4 py-2 border-b border-gray-700">
+                  <td className="px-4 py-2 border-b border-gray-300 dark:border-gray-600">
                     {appointment.time}
                   </td>
-                  <td className="px-4 py-2 border-b border-gray-700">
+                  <td className="px-4 py-2 border-b border-gray-300 dark:border-gray-600">
                     {appointment.condition}
                   </td>
                 </tr>
@@ -119,7 +127,7 @@ const Appointments = () => {
               <tr>
                 <td
                   colSpan="4"
-                  className="text-center py-4 text-gray-400 border-b border-gray-700"
+                  className="text-center py-4 text-gray-500 dark:text-gray-400 border-b border-gray-300 dark:border-gray-600"
                 >
                   No appointments found for the selected date.
                 </td>

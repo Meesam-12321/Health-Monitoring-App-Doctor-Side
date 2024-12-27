@@ -19,13 +19,13 @@ const AppointmentDetails = () => {
   };
 
   return (
-    <div className="p-6 bg-gray-900 min-h-screen text-white">
+    <div className="p-6 min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-3xl font-bold text-blue-500">Appointment Details</h1>
+        <h1 className="text-3xl font-bold text-blue-600 dark:text-blue-400">Appointment Details</h1>
         <button
           onClick={() => navigate('/appointments')}
-          className="flex items-center px-4 py-2 bg-blue-600 rounded-lg hover:bg-blue-700 transition-all ease-in-out duration-300"
+          className="flex items-center px-4 py-2 bg-blue-600 dark:bg-blue-500 text-white rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600 transition-all ease-in-out duration-300"
         >
           <FaArrowLeft className="mr-2" />
           Back to Appointments
@@ -33,10 +33,12 @@ const AppointmentDetails = () => {
       </div>
 
       {/* Appointment Card */}
-      <div className="bg-gray-800 p-8 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300">
+      <div className="p-8 bg-white dark:bg-gray-800 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300">
         <div className="mb-6">
-          <h2 className="text-2xl font-semibold text-blue-400 mb-2">Appointment Information</h2>
-          <p className="text-gray-300">ID: {appointment.id}</p>
+          <h2 className="text-2xl font-semibold text-blue-600 dark:text-blue-400 mb-2">
+            Appointment Information
+          </h2>
+          <p className="text-gray-700 dark:text-gray-300">ID: {appointment.id}</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -79,8 +81,8 @@ const AppointmentDetails = () => {
 
         {/* Notes Section */}
         <div className="mt-8">
-          <h3 className="text-xl font-medium text-blue-400">Notes</h3>
-          <p className="text-gray-300 mt-2">{appointment.notes}</p>
+          <h3 className="text-xl font-medium text-blue-600 dark:text-blue-400">Notes</h3>
+          <p className="text-gray-700 dark:text-gray-300 mt-2">{appointment.notes}</p>
         </div>
       </div>
     </div>

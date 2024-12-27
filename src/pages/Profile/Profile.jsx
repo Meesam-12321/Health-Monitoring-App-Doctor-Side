@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { FaEdit, FaSave } from 'react-icons/fa';
 
 const Profile = () => {
   // Static data for doctor's profile (replace with real data from backend)
@@ -26,23 +27,24 @@ const Profile = () => {
     }));
   };
 
-  // Toggle edit mode (this will now navigate to EditProfile page)
+  // Toggle edit mode (navigates to edit page for a more modular approach)
   const toggleEdit = () => {
-    // Navigate to EditProfile page when the button is clicked
-    navigate('/profile/edit');  // Adjusted to match the route in your App.jsx
+    navigate('/profile/edit');
   };
 
   return (
-    <div className="min-h-screen bg-gray-900 p-8">
-      <div className="max-w-4xl mx-auto bg-gray-800 p-8 rounded-lg shadow-lg">
-        <h1 className="text-3xl font-bold text-center text-blue-400 mb-8">
+    <div className="min-h-screen bg-gray-100 dark:bg-gray-900 flex items-center justify-center p-6">
+      <div className="max-w-4xl w-full bg-white dark:bg-gray-800 p-8 rounded-3xl shadow-lg">
+        <h1 className="text-4xl font-bold text-center text-indigo-600 dark:text-indigo-400 mb-8">
           {isEditing ? 'Edit Profile' : 'Doctor Profile'}
         </h1>
 
         <div className="space-y-6">
           {/* Name */}
           <div className="flex flex-col">
-            <label htmlFor="name" className="text-gray-200 font-medium mb-2">Name</label>
+            <label htmlFor="name" className="text-gray-700 dark:text-gray-300 font-medium mb-2">
+              Name
+            </label>
             <input
               type="text"
               id="name"
@@ -50,13 +52,19 @@ const Profile = () => {
               value={formData.name}
               onChange={handleChange}
               disabled={!isEditing}
-              className="px-4 py-2 bg-gray-700 text-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className={`px-6 py-3 rounded-lg shadow focus:outline-none transition-all ${
+                isEditing
+                  ? 'bg-gray-100 dark:bg-gray-700 focus:ring-2 focus:ring-indigo-500'
+                  : 'bg-gray-200 dark:bg-gray-600'
+              } text-gray-800 dark:text-gray-300`}
             />
           </div>
 
           {/* Email */}
           <div className="flex flex-col">
-            <label htmlFor="email" className="text-gray-200 font-medium mb-2">Email</label>
+            <label htmlFor="email" className="text-gray-700 dark:text-gray-300 font-medium mb-2">
+              Email
+            </label>
             <input
               type="email"
               id="email"
@@ -64,13 +72,22 @@ const Profile = () => {
               value={formData.email}
               onChange={handleChange}
               disabled={!isEditing}
-              className="px-4 py-2 bg-gray-700 text-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className={`px-6 py-3 rounded-lg shadow focus:outline-none transition-all ${
+                isEditing
+                  ? 'bg-gray-100 dark:bg-gray-700 focus:ring-2 focus:ring-indigo-500'
+                  : 'bg-gray-200 dark:bg-gray-600'
+              } text-gray-800 dark:text-gray-300`}
             />
           </div>
 
           {/* Specialization */}
           <div className="flex flex-col">
-            <label htmlFor="specialization" className="text-gray-200 font-medium mb-2">Specialization</label>
+            <label
+              htmlFor="specialization"
+              className="text-gray-700 dark:text-gray-300 font-medium mb-2"
+            >
+              Specialization
+            </label>
             <input
               type="text"
               id="specialization"
@@ -78,13 +95,19 @@ const Profile = () => {
               value={formData.specialization}
               onChange={handleChange}
               disabled={!isEditing}
-              className="px-4 py-2 bg-gray-700 text-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className={`px-6 py-3 rounded-lg shadow focus:outline-none transition-all ${
+                isEditing
+                  ? 'bg-gray-100 dark:bg-gray-700 focus:ring-2 focus:ring-indigo-500'
+                  : 'bg-gray-200 dark:bg-gray-600'
+              } text-gray-800 dark:text-gray-300`}
             />
           </div>
 
           {/* Phone */}
           <div className="flex flex-col">
-            <label htmlFor="phone" className="text-gray-200 font-medium mb-2">Phone</label>
+            <label htmlFor="phone" className="text-gray-700 dark:text-gray-300 font-medium mb-2">
+              Phone
+            </label>
             <input
               type="text"
               id="phone"
@@ -92,13 +115,19 @@ const Profile = () => {
               value={formData.phone}
               onChange={handleChange}
               disabled={!isEditing}
-              className="px-4 py-2 bg-gray-700 text-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className={`px-6 py-3 rounded-lg shadow focus:outline-none transition-all ${
+                isEditing
+                  ? 'bg-gray-100 dark:bg-gray-700 focus:ring-2 focus:ring-indigo-500'
+                  : 'bg-gray-200 dark:bg-gray-600'
+              } text-gray-800 dark:text-gray-300`}
             />
           </div>
 
           {/* Bio */}
           <div className="flex flex-col">
-            <label htmlFor="bio" className="text-gray-200 font-medium mb-2">Bio</label>
+            <label htmlFor="bio" className="text-gray-700 dark:text-gray-300 font-medium mb-2">
+              Bio
+            </label>
             <textarea
               id="bio"
               name="bio"
@@ -106,25 +135,39 @@ const Profile = () => {
               onChange={handleChange}
               disabled={!isEditing}
               rows="4"
-              className="px-4 py-2 bg-gray-700 text-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className={`px-6 py-3 rounded-lg shadow focus:outline-none transition-all ${
+                isEditing
+                  ? 'bg-gray-100 dark:bg-gray-700 focus:ring-2 focus:ring-indigo-500'
+                  : 'bg-gray-200 dark:bg-gray-600'
+              } text-gray-800 dark:text-gray-300`}
             />
           </div>
 
-          {/* Edit Button */}
-          <div className="mt-6">
+          {/* Edit/Save Button */}
+          <div>
             <button
               onClick={toggleEdit}
-              className="w-full py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className="w-full py-3 flex items-center justify-center bg-indigo-600 dark:bg-indigo-500 text-white rounded-lg hover:bg-indigo-700 dark:hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-400 transition-all"
             >
-              {isEditing ? 'Save Changes' : 'Edit Profile'}
+              {isEditing ? (
+                <>
+                  <FaSave className="mr-2" />
+                  Save Changes
+                </>
+              ) : (
+                <>
+                  <FaEdit className="mr-2" />
+                  Edit Profile
+                </>
+              )}
             </button>
           </div>
 
-          {/* Back to Dashboard Button */}
-          <div className="mt-4">
+          {/* Back to Dashboard */}
+          <div>
             <button
               onClick={() => navigate('/dashboard')}
-              className="w-full py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-400"
+              className="w-full py-3 bg-gray-600 dark:bg-gray-500 text-white rounded-lg hover:bg-gray-700 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400 transition-all"
             >
               Back to Dashboard
             </button>

@@ -12,10 +12,10 @@ const Sidebar = () => {
   ];
 
   return (
-    <aside className="w-64 bg-gray-800 h-screen flex flex-col">
+    <aside className="w-64 bg-gray-100 dark:bg-gray-900 h-screen flex flex-col">
       {/* Logo */}
-      <div className="flex items-center justify-center h-20 border-b border-gray-700">
-        <h1 className="text-2xl font-bold text-white">DocPortal</h1>
+      <div className="flex items-center justify-center h-20 border-b border-gray-300 dark:border-gray-700">
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">DocPortal</h1>
       </div>
 
       {/* Menu */}
@@ -28,8 +28,8 @@ const Sidebar = () => {
                 className={({ isActive }) =>
                   `flex items-center gap-4 px-4 py-3 rounded-lg transition ${
                     isActive
-                      ? 'bg-gray-700 text-white'
-                      : 'text-gray-400 hover:bg-gray-700 hover:text-white'
+                      ? 'bg-gray-200 text-gray-900 dark:bg-gray-700 dark:text-white'
+                      : 'text-gray-600 dark:text-gray-400 hover:bg-gray-200 hover:text-gray-900 dark:hover:bg-gray-700 dark:hover:text-white'
                   }`
                 }
               >
@@ -42,8 +42,8 @@ const Sidebar = () => {
       </nav>
 
       {/* Footer */}
-      <div className="border-t border-gray-700 p-4">
-        <p className="text-sm text-gray-500">© 2024 DocPortal</p>
+      <div className="border-t border-gray-300 dark:border-gray-700 p-4">
+        <p className="text-sm text-gray-500 dark:text-gray-400">© 2024 DocPortal</p>
       </div>
     </aside>
   );

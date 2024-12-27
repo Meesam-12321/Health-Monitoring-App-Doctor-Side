@@ -22,9 +22,11 @@ function App() {
   // Apply theme when darkMode changes
   useEffect(() => {
     if (darkMode) {
-      document.documentElement.classList.add("dark");
+      document.documentElement.classList.add("dark");  // Apply dark theme to the root element
+      localStorage.setItem("darkMode", "true"); // Save the preference to localStorage
     } else {
-      document.documentElement.classList.remove("dark");
+      document.documentElement.classList.remove("dark");  // Remove dark theme from root
+      localStorage.setItem("darkMode", "false"); // Save the preference to localStorage
     }
   }, [darkMode]);
 
