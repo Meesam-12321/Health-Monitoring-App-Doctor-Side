@@ -1,9 +1,30 @@
+<<<<<<< HEAD
 import React, { useContext } from "react";
 import { NavLink } from "react-router-dom"; // Import NavLink for routing
 import { DarkModeContext } from "../../Context/DarkModeContext";
 
 const Navbar = () => {
   const { darkMode, toggleDarkMode } = useContext(DarkModeContext); // Use the DarkModeContext
+=======
+import React from "react";
+import { NavLink, Link } from "react-router-dom"; // Import Link from react-router-dom
+
+const Navbar = ({ darkMode, setDarkMode }) => {
+  const toggleDarkMode = () => {
+    const newDarkMode = !darkMode;
+    setDarkMode(newDarkMode); // Update darkMode state
+
+    // Save darkMode preference in localStorage
+    localStorage.setItem("darkMode", newDarkMode);
+
+    // Apply the dark mode class to the root element
+    if (newDarkMode) {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+  };
+>>>>>>> 48d35f3379615a80edf2d9f8838ca5b967d2a74f
 
   return (
     <nav className={`bg-white dark:bg-gray-800 shadow-md fixed top-0 left-0 w-full z-50 transition duration-300`}>
@@ -25,22 +46,52 @@ const Navbar = () => {
           <div className="hidden md:flex space-x-4">
             <NavLink
               to="/dashboard"
+<<<<<<< HEAD
               className="text-gray-800 dark:text-gray-300 hover:text-blue-500 dark:hover:text-blue-400 px-3 py-2 rounded-md text-sm font-medium transition duration-300"
               activeClassName="text-blue-500 font-bold"
+=======
+              className={({ isActive }) =>
+                `px-3 py-2 rounded-md text-sm font-medium ${
+                  isActive
+                    ? "text-blue-500 dark:text-blue-400"
+                    : "text-gray-800 dark:text-gray-300 hover:text-blue-500 dark:hover:text-blue-400"
+                }`
+              }
+>>>>>>> 48d35f3379615a80edf2d9f8838ca5b967d2a74f
             >
               Dashboard
             </NavLink>
             <NavLink
               to="/appointments"
+<<<<<<< HEAD
               className="text-gray-800 dark:text-gray-300 hover:text-blue-500 dark:hover:text-blue-400 px-3 py-2 rounded-md text-sm font-medium transition duration-300"
               activeClassName="text-blue-500 font-bold"
+=======
+              className={({ isActive }) =>
+                `px-3 py-2 rounded-md text-sm font-medium ${
+                  isActive
+                    ? "text-blue-500 dark:text-blue-400"
+                    : "text-gray-800 dark:text-gray-300 hover:text-blue-500 dark:hover:text-blue-400"
+                }`
+              }
+>>>>>>> 48d35f3379615a80edf2d9f8838ca5b967d2a74f
             >
               Appointments
             </NavLink>
             <NavLink
               to="/patients"
+<<<<<<< HEAD
               className="text-gray-800 dark:text-gray-300 hover:text-blue-500 dark:hover:text-blue-400 px-3 py-2 rounded-md text-sm font-medium transition duration-300"
               activeClassName="text-blue-500 font-bold"
+=======
+              className={({ isActive }) =>
+                `px-3 py-2 rounded-md text-sm font-medium ${
+                  isActive
+                    ? "text-blue-500 dark:text-blue-400"
+                    : "text-gray-800 dark:text-gray-300 hover:text-blue-500 dark:hover:text-blue-400"
+                }`
+              }
+>>>>>>> 48d35f3379615a80edf2d9f8838ca5b967d2a74f
             >
               Patients
             </NavLink>
@@ -51,6 +102,7 @@ const Navbar = () => {
             {/* Dark Mode Toggle */}
             <div
               onClick={toggleDarkMode}
+<<<<<<< HEAD
               className="relative w-14 h-8 flex items-center bg-gray-300 dark:bg-gray-600 rounded-full cursor-pointer transition duration-300"
             >
               <div
@@ -79,6 +131,46 @@ const Navbar = () => {
                 )}
               </div>
             </div>
+=======
+              className="flex items-center px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-all duration-300 transform hover:scale-105"
+            >
+              {/* Toggle icon based on darkMode */}
+              {darkMode ? (
+                // Sun icon (Dark Mode, so it switches to Light Mode)
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 3v1m0 16v1m8.66-8.66h-1m-14.14 0h-1m1.93-6.07l-.71-.71m12.02 12.02l-.71-.71m.71-12.02l-.71.71m-12.02 12.02l-.71.71M12 5a7 7 0 100 14 7 7 0 000-14z"
+                  />
+                </svg>
+              ) : (
+                // Half Moon icon (Light Mode, so it switches to Dark Mode)
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 3c4.97 0 9 4.03 9 9s-4.03 9-9 9a9 9 0 010-18z"
+                  />
+                </svg>
+              )}
+              <span className="ml-2">{darkMode ? "Light Mode" : "Dark Mode"}</span>
+            </button>
+>>>>>>> 48d35f3379615a80edf2d9f8838ca5b967d2a74f
 
             {/* User Profile (Logo next to Dr. Smith) - Now clickable */}
             <div className="relative">
@@ -88,10 +180,19 @@ const Navbar = () => {
                   alt="User Avatar"
                   className="h-8 w-8 rounded-full border-2 border-blue-500"
                 />
-                <span className="text-gray-800 dark:text-gray-300 text-sm font-medium">
+                {/* Link to Profile Page when Dr. Smith is clicked */}
+                <Link
+                  to="/profile"
+                  className="text-gray-800 dark:text-gray-300 text-sm font-medium hover:underline"
+                >
                   Dr. Smith
+<<<<<<< HEAD
                 </span>
               </NavLink>
+=======
+                </Link>
+              </button>
+>>>>>>> 48d35f3379615a80edf2d9f8838ca5b967d2a74f
             </div>
           </div>
         </div>

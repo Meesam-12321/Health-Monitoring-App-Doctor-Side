@@ -1,7 +1,12 @@
+<<<<<<< HEAD
 import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import { DarkModeContext } from "../../Context/DarkModeContext"; // Import the context
 import { useNavigate } from "react-router-dom"; // Import useNavigate for routing
+=======
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+>>>>>>> 48d35f3379615a80edf2d9f8838ca5b967d2a74f
 
 const Appointments = () => {
   const { darkMode } = useContext(DarkModeContext); // Access darkMode from context
@@ -38,6 +43,7 @@ const Appointments = () => {
     },
   ];
 
+<<<<<<< HEAD
   // Navigate to details page
   const navigate = useNavigate();
 
@@ -61,6 +67,13 @@ const Appointments = () => {
 
     fetchAppointments();
   }, []);
+=======
+  const [filterDate, setFilterDate] = useState('');
+  const [appointments, setAppointments] = useState(appointmentsData);
+  const [selectedPatientId, setSelectedPatientId] = useState(null);
+
+  const navigate = useNavigate();
+>>>>>>> 48d35f3379615a80edf2d9f8838ca5b967d2a74f
 
   // Handle date filtering
   const handleFilterChange = (e) => {
@@ -75,10 +88,23 @@ const Appointments = () => {
     }
   };
 
+<<<<<<< HEAD
   // Function to handle View Details button click
   const handleViewDetails = (appointmentId) => {
     navigate(`/appointments/${appointmentId}`); // Navigate to the details page
   };
+=======
+  // Handle row click
+  const handleRowClick = (id) => {
+    setSelectedPatientId(id);
+    navigate(`/appointments/${id}`);
+  };
+
+  return (
+    <div className="p-6 min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white">
+      {/* Header */}
+      <h1 className="text-3xl font-bold mb-6">Appointments</h1>
+>>>>>>> 48d35f3379615a80edf2d9f8838ca5b967d2a74f
 
   return (
     <div
@@ -107,15 +133,20 @@ const Appointments = () => {
           id="filterDate"
           value={filterDate}
           onChange={handleFilterChange}
+<<<<<<< HEAD
           className={`p-3 w-full max-w-md rounded-lg ${
             darkMode
               ? "bg-gray-900 text-white border border-gray-600 focus:ring-indigo-500"
               : "bg-white text-gray-900 border border-gray-300 focus:ring-indigo-500"
           }`}
+=======
+          className="p-2 rounded-lg bg-gray-200 dark:bg-gray-800 text-gray-900 dark:text-white border border-gray-400 dark:border-gray-600"
+>>>>>>> 48d35f3379615a80edf2d9f8838ca5b967d2a74f
         />
       </div>
 
       {/* Appointments Table */}
+<<<<<<< HEAD
       <div
         className={`p-8 rounded-lg shadow-md w-full ${
           darkMode ? "bg-gray-800" : "bg-white border border-gray-300"
@@ -133,6 +164,24 @@ const Appointments = () => {
               <th className="px-6 py-3 border-b border-gray-600">Time</th>
               <th className="px-6 py-3 border-b border-gray-600">Condition</th>
               <th className="px-6 py-3 border-b border-gray-600">Action</th> {/* Added Action column */}
+=======
+      <div className="p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md">
+        <table className="w-full text-left table-auto">
+          <thead>
+            <tr className="bg-gray-200 dark:bg-gray-700">
+              <th className="px-4 py-2 border-b border-gray-300 dark:border-gray-600">
+                Patient
+              </th>
+              <th className="px-4 py-2 border-b border-gray-300 dark:border-gray-600">
+                Date
+              </th>
+              <th className="px-4 py-2 border-b border-gray-300 dark:border-gray-600">
+                Time
+              </th>
+              <th className="px-4 py-2 border-b border-gray-300 dark:border-gray-600">
+                Condition
+              </th>
+>>>>>>> 48d35f3379615a80edf2d9f8838ca5b967d2a74f
             </tr>
           </thead>
           <tbody>
@@ -140,6 +189,7 @@ const Appointments = () => {
               appointments.map((appointment) => (
                 <tr
                   key={appointment.id}
+<<<<<<< HEAD
                   className={`hover:transition duration-300 ease-in-out ${
                     darkMode ? "hover:bg-gray-700" : "hover:bg-gray-200"
                   }`}
@@ -164,15 +214,41 @@ const Appointments = () => {
                       View Details
                     </button>
                   </td>
+=======
+                  onClick={() => handleRowClick(appointment.id)}
+                  className={`cursor-pointer transition-all ${
+                    selectedPatientId === appointment.id
+                      ? 'bg-green-500 dark:bg-green-600 text-white'
+                      : 'hover:bg-gray-100 dark:hover:bg-gray-700'
+                  }`}
+                >
+                  <td className="px-4 py-2 border-b border-gray-300 dark:border-gray-600">
+                    {appointment.patientName}
+                  </td>
+                  <td className="px-4 py-2 border-b border-gray-300 dark:border-gray-600">
+                    {appointment.date}
+                  </td>
+                  <td className="px-4 py-2 border-b border-gray-300 dark:border-gray-600">
+                    {appointment.time}
+                  </td>
+                  <td className="px-4 py-2 border-b border-gray-300 dark:border-gray-600">
+                    {appointment.condition}
+                  </td>
+>>>>>>> 48d35f3379615a80edf2d9f8838ca5b967d2a74f
                 </tr>
               ))
             ) : (
               <tr>
                 <td
+<<<<<<< HEAD
                   colSpan="5" // Updated to 5 since we added one more column
                   className={`text-center py-4 ${
                     darkMode ? "text-gray-400" : "text-gray-700"
                   } border-b border-gray-700`}
+=======
+                  colSpan="4"
+                  className="text-center py-4 text-gray-500 dark:text-gray-400 border-b border-gray-300 dark:border-gray-600"
+>>>>>>> 48d35f3379615a80edf2d9f8838ca5b967d2a74f
                 >
                   No appointments found for the selected date.
                 </td>
