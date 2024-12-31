@@ -15,6 +15,7 @@ import PatientDetails from "./pages/Patients/PatientDetails";
 import Profile from "./pages/Profile/Profile";
 import EditProfile from "./pages/Profile/EditProfile";
 import LandingPage from "./pages/LandingPage/LandingPage"; // Import LandingPage component
+import { DarkModeProvider } from "./Context/DarkModeContext"; // Import DarkModeProvider
 
 const AppLayout = () => {
   const location = useLocation(); // Get the current location
@@ -56,9 +57,11 @@ const AppLayout = () => {
 
 function App() {
   return (
-    <Router>
-      <AppLayout />
-    </Router>
+    <DarkModeProvider> {/* Wrap the application with the DarkModeProvider */}
+      <Router>
+        <AppLayout />
+      </Router>
+    </DarkModeProvider>
   );
 }
 

@@ -1,8 +1,11 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { NavLink } from 'react-router-dom';
 import { FaHome, FaCalendarAlt, FaUserFriends, FaComments, FaCog, FaRobot } from 'react-icons/fa';
+import { DarkModeContext } from "../../Context/DarkModeContext"; // Import DarkModeContext
 
 const Sidebar = () => {
+  const { darkMode } = useContext(DarkModeContext); // Access darkMode state
+
   const menuItems = [
     { name: 'Dashboard', path: '/dashboard', icon: <FaHome /> },
     { name: 'Appointments', path: '/appointments', icon: <FaCalendarAlt /> },
@@ -13,10 +16,24 @@ const Sidebar = () => {
   ];
 
   return (
-    <aside className="w-64 bg-gradient-to-b from-gray-900 via-gray-800 to-gray-700 h-screen flex flex-col shadow-lg">
+    <aside
+      className={`w-64 h-screen flex flex-col shadow-lg transition-all duration-300 ${
+        darkMode ? 'bg-gradient-to-b from-gray-900 via-gray-800 to-gray-700' : 'bg-gradient-to-b from-gray-100 via-gray-200 to-gray-300'
+      }`}
+    >
       {/* Logo */}
-      <div className="flex items-center justify-center h-20 border-b border-gray-600">
-        <h1 className="text-3xl font-extrabold text-white tracking-wide">DocPortal</h1>
+      <div
+        className={`flex items-center justify-center h-24 border-b border-gray-600 transition-all duration-300 ${
+          darkMode ? 'border-gray-600' : 'border-gray-300'
+        } mt-11`} // Margin-top added here to push the logo down
+      >
+        <h1
+          className={`text-3xl font-extrabold tracking-wide ${
+            darkMode ? 'text-white' : 'text-gray-900'
+          }`}
+        >
+          DocPortal
+        </h1>
       </div>
 
       {/* Menu */}
@@ -30,7 +47,9 @@ const Sidebar = () => {
                   `flex items-center gap-4 px-5 py-3 rounded-xl transition-all duration-300 shadow-sm hover:shadow-md transform hover:scale-105 ${
                     isActive
                       ? 'bg-gradient-to-r from-blue-500 to-blue-700 text-white font-bold'
-                      : 'text-gray-300 hover:bg-gradient-to-r hover:from-blue-600 hover:to-blue-800 hover:text-white'
+                      : darkMode
+                      ? 'text-gray-300 hover:bg-gradient-to-r hover:from-blue-600 hover:to-blue-800 hover:text-white'
+                      : 'text-gray-900 hover:bg-gradient-to-r hover:from-blue-600 hover:to-blue-800 hover:text-white'
                   }`
                 }
               >
@@ -43,8 +62,12 @@ const Sidebar = () => {
       </nav>
 
       {/* Footer */}
-      <div className="border-t border-gray-600 p-5 text-center">
-        <p className="text-sm text-gray-400">© 2024 DocPortal</p>
+      <div
+        className={`border-t p-5 text-center transition-all duration-300 ${
+          darkMode ? 'border-gray-600 text-gray-400' : 'border-gray-300 text-gray-600'
+        }`}
+      >
+        <p className="text-sm">© 2024 DocPortal</p>
       </div>
     </aside>
   );

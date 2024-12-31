@@ -1,12 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useParams } from 'react-router-dom';
 import { FaPaperPlane } from 'react-icons/fa';
+import { DarkModeContext } from "../../Context/DarkModeContext"; // Import DarkModeContext
 
 const ChatPage = () => {
   const { patientId } = useParams();
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
   const [isLoading, setIsLoading] = useState(true);
+
+  const { darkMode } = useContext(DarkModeContext); // Access darkMode state
 
   // Simulated messages data (replace with API data fetching in real app)
   const simulatedMessages = [
@@ -35,15 +38,21 @@ const ChatPage = () => {
   };
 
   return (
-    <div className="flex flex-col w-full h-full bg-gray-900">
-      <header className="flex items-center justify-between bg-gray-800 px-6 py-4 shadow-md">
-        <h1 className="text-xl font-bold text-white">Chat with Patient</h1>
-        <span className="text-gray-400">Patient ID: {patientId}</span>
+    <div className={`flex flex-col w-full h-full ${darkMode ? 'bg-gray-900' : 'bg-gray-100'}`}>
+      <header
+        className={`flex items-center justify-between px-6 py-4 shadow-md ${darkMode ? 'bg-gray-800' : 'bg-white'}`}
+      >
+        <h1 className={`text-xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Chat with Patient</h1>
+        <span className={`text-gray-400 ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+          Patient ID: {patientId}
+        </span>
       </header>
       <main className="flex-1 flex flex-col p-4">
-        <div className="flex-1 overflow-y-auto bg-gray-800 p-4 rounded-lg shadow-md">
+        <div
+          className={`flex-1 overflow-y-auto ${darkMode ? 'bg-gray-800' : 'bg-white'} p-4 rounded-lg shadow-md`}
+        >
           {isLoading ? (
-            <div className="text-center text-gray-400">Loading chat...</div>
+            <div className={`text-center ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>Loading chat...</div>
           ) : (
             <div>
               {messages.map((message) => (
@@ -54,8 +63,12 @@ const ChatPage = () => {
                   <div
                     className={`max-w-xs px-4 py-3 text-sm rounded-lg shadow-md ${
                       message.sender === 'doctor'
-                        ? 'bg-blue-600 text-white'
-                        : 'bg-green-600 text-white'
+                        ? darkMode
+                          ? 'bg-blue-600 text-white'
+                          : 'bg-blue-500 text-white'
+                        : darkMode
+                        ? 'bg-green-600 text-white'
+                        : 'bg-green-500 text-white'
                     }`}
                   >
                     <p>{message.text}</p>
@@ -71,12 +84,16 @@ const ChatPage = () => {
             type="text"
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
-            className="flex-1 px-4 py-2 bg-gray-700 text-white rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className={`flex-1 px-4 py-2 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+              darkMode ? 'bg-gray-700 text-white' : 'bg-white text-gray-900'
+            }`}
             placeholder="Type your message..."
           />
           <button
             onClick={handleSendMessage}
-            className="ml-4 px-6 py-2 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 flex items-center"
+            className={`ml-4 px-6 py-2 rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 flex items-center ${
+              darkMode ? 'bg-blue-600 text-white' : 'bg-blue-500 text-white'
+            }`}
           >
             <FaPaperPlane className="mr-2" /> Send
           </button>
