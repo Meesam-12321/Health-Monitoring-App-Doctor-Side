@@ -1,7 +1,7 @@
 import React, { useState, useContext } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { DarkModeContext } from '../../Context/DarkModeContext'; // Import DarkModeContext
+import { DarkModeContext } from '../Context/DarkModeContext'; // Import DarkModeContext
 
 const DoctorRegister = () => {
     const [formData, setFormData] = useState({
@@ -29,12 +29,12 @@ const DoctorRegister = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.post('http://localhost:3000/api/auth/register', {
+            const response = await axios.post('http://localhost:3000/api/auth/doctor/register', {
                 ...formData,
                 role: 'doctor', // Add the role as 'doctor' from the model
             });
             console.log('Doctor Registered:', response.data);
-            navigate('/doctors');
+            navigate('/dashboard');
         } catch (error) {
             console.error('Registration Error:', error.response?.data || error.message);
         }

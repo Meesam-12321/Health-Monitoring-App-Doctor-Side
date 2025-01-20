@@ -1,17 +1,24 @@
 import React, { useContext } from "react";
-import { FaCalendarAlt, FaUserFriends, FaBell, FaFileMedical, FaChartLine } from "react-icons/fa";
-import { Link } from "react-router-dom"; // Import Link from React Router
-import { DarkModeContext } from "../../Context/DarkModeContext"; // Import the context
+import {
+  FaCalendarAlt,
+  FaUserFriends,
+  FaBell,
+  FaFileMedical,
+  FaChartLine,
+} from "react-icons/fa";
+import { Link, useNavigate } from "react-router-dom";
+import {jwtDecode} from "jwt-decode"; // Import jwt-decode to decode the token
+import { DarkModeContext } from "../Context/DarkModeContext";
 
 const Dashboard = () => {
-  const { darkMode } = useContext(DarkModeContext); // Access darkMode from context
+  const { darkMode } = useContext(DarkModeContext);
+  const navigate = useNavigate();
 
   const stats = [
     { title: "Total Patients", value: 45, icon: <FaUserFriends />, color: "bg-blue-500 dark:bg-blue-700" },
     { title: "Appointments Today", value: 8, icon: <FaCalendarAlt />, color: "bg-green-500 dark:bg-green-700" },
     { title: "Pending Alerts", value: 3, icon: <FaBell />, color: "bg-yellow-500 dark:bg-yellow-600" },
     { title: "Prescriptions Issued", value: 120, icon: <FaFileMedical />, color: "bg-red-500 dark:bg-red-700" },
-   
   ];
 
   const appointments = [
@@ -19,6 +26,23 @@ const Dashboard = () => {
     { id: 2, patientName: "Jane Smith", time: "11:15 AM", condition: "Follow-up Consultation" },
     { id: 3, patientName: "Emily Johnson", time: "1:00 PM", condition: "Routine Physical" },
   ];
+
+  const handleChatNavigation = () => {
+    const token = localStorage.getItem("authToken");
+
+    if (token) {
+      try {
+        const decodedToken = jwtDecode(token); 
+        console.log(decodedToken);// Decode the token
+        navigate("/chat", { state: { doctorId: decodedToken.id } }); // Pass doctorId to Chat screen
+      } catch (error) {
+        console.error("Invalid Token", error);
+        alert("Invalid session. Please log in again.");
+      }
+    } else {
+      alert("You are not logged in. Please log in to access Chat.");
+    }
+  };
 
   return (
     <div
@@ -56,6 +80,16 @@ const Dashboard = () => {
             </div>
           </div>
         ))}
+      </div>
+
+      {/* Sidebar Navigation */}
+      <div className="mb-8">
+        <button
+          onClick={handleChatNavigation}
+          className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+        >
+          Go to Chat
+        </button>
       </div>
 
       {/* Upcoming Appointments Section */}

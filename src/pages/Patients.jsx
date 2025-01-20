@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
-import { DarkModeContext } from "../../Context/DarkModeContext"; // Import the context
+import { DarkModeContext } from "../Context/DarkModeContext"; // Import the context
 
 const Patients = () => {
     const { darkMode } = useContext(DarkModeContext); // Access darkMode state

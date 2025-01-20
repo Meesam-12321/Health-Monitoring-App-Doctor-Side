@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import { Link } from 'react-router-dom';
-import { DarkModeContext } from "../../Context/DarkModeContext"; // Import the context
+import { DarkModeContext } from "../Context/DarkModeContext"; // Import the context
 
 const LandingPage = () => {
   const { darkMode } = useContext(DarkModeContext); // Access darkMode from context

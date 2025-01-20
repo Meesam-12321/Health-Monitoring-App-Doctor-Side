@@ -1,7 +1,7 @@
 import React, { useState, useContext } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { DarkModeContext } from "../../Context/DarkModeContext";
+import { DarkModeContext } from "../Context/DarkModeContext";
 
 const DoctorLogin = () => {
   const { darkMode } = useContext(DarkModeContext);
@@ -23,10 +23,16 @@ const DoctorLogin = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post("http://localhost:3000/api/auth/login", {
+      const response = await axios.post("http://localhost:3000/api/auth/doctor/login", {
         email: formData.email,
         password: formData.password,
       });
+
+      // Save token and other info in localStorage
+      const { token, user } = response.data;
+      localStorage.setItem("authToken", token);
+      localStorage.setItem("userInfo", JSON.stringify(user));
+
       console.log("Login Successful:", response.data);
       navigate("/dashboard");
     } catch (error) {

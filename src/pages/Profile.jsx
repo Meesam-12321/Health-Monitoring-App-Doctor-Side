@@ -1,7 +1,7 @@
 import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaEdit, FaSave } from "react-icons/fa";
-import { DarkModeContext } from "../../Context/DarkModeContext.jsx"; // Corrected import path
+import { DarkModeContext } from "../Context/DarkModeContext.jsx"; // Corrected import path
 
 const Profile = () => {
   // Static data for doctor's profile (replace with real data from backend)

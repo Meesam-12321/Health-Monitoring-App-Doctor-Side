@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from "react";
-import { DarkModeContext } from "../../Context/DarkModeContext";
+import { DarkModeContext } from "../Context/DarkModeContext";
 import ReactMarkdown from "react-markdown"; 
 
 const Chatbot = ({ chatId }) => {

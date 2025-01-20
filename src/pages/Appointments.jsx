@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
-import { DarkModeContext } from "../../Context/DarkModeContext"; // Import the context
+import { DarkModeContext } from "../Context/DarkModeContext"; // Import the context
 import { useNavigate } from "react-router-dom"; // Import useNavigate for routing
 
 const Appointments = () => {

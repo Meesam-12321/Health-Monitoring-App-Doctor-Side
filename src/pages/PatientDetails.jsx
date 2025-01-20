@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { DarkModeContext } from "../../Context/DarkModeContext";
+import { DarkModeContext } from "../Context/DarkModeContext";
 
 const PatientDetails = () => {
   const { darkMode } = useContext(DarkModeContext);

@@ -1,25 +1,28 @@
-import React, { useEffect, useState } from "react";
-import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import Navbar from "./components/Navbar/Navbar";
 import Sidebar from "./components/Sidebar/Sidebar";
 import ChatbotSidebar from "./components/Sidebar/ChatbotSidebar";
-import Dashboard from "./pages/Dashboard/Dashboard";
-import Appointments from "./pages/Appointments/Appointments";
-import AppointmentDetails from "./pages/Appointments/AppointmentDetails";
-import ChatPage from "./pages/Chat/ChatPage";
-import Chatbot from "./pages/Chatbot/Chatbot";
-import DoctorLogin from "./pages/DoctorLogin/DoctorLogin";
-import DoctorRegister from "./pages/DoctorRegister/DoctorRegister";
-import Patients from "./pages/Patients/Patients";
-import PatientDetails from "./pages/Patients/PatientDetails";
-import Profile from "./pages/Profile/Profile";
-import EditProfile from "./pages/Profile/EditProfile";
-import LandingPage from "./pages/LandingPage/LandingPage";
+import Dashboard from "./pages/Dashboard";
+import Appointments from "./pages/Appointments";
+import AppointmentDetails from "./pages/AppointmentDetails";
+import ChatPage from "./pages/ChatPage";
+import Chatbot from "./pages/Chatbot";
+import DoctorLogin from "./pages/DoctorLogin";
+import DoctorRegister from "./pages/DoctorRegister";
+import Patients from "./pages/Patients";
+import PatientDetails from "./pages/PatientDetails";
+import Profile from "./pages/Profile";
+import EditProfile from "./pages/EditProfile";
+import LandingPage from "./pages/LandingPage";
 import { DarkModeProvider } from "./Context/DarkModeContext";
 
 const AppLayout = () => {
   const location = useLocation();
   const isChatbotRoute = location.pathname === "/chatbot";
+
+  // Hide Navbar and Sidebar on login and register pages
+  const isAuthRoute = location.pathname === "/login" || location.pathname === "/register" || location.pathname === "/" || location.pathname === "/chat";
 
   // State to manage current chat ID
   const [currentChatId, setCurrentChatId] = useState(null);
@@ -31,22 +34,24 @@ const AppLayout = () => {
 
   return (
     <div className="flex min-h-screen">
-      {/* Sidebar */}
-      <div className="w-1/4">
-        {isChatbotRoute ? (
-          <ChatbotSidebar
-            onStartNewChat={handleStartNewChat} // Pass handler to ChatbotSidebar
-            currentChatId={currentChatId}
-          />
-        ) : (
-          <Sidebar />
-        )}
-      </div>
+      {/* Conditionally render Sidebar */}
+      {!isAuthRoute && (
+        <div className="w-1/4">
+          {isChatbotRoute ? (
+            <ChatbotSidebar
+              onStartNewChat={handleStartNewChat} // Pass handler to ChatbotSidebar
+              currentChatId={currentChatId}
+            />
+          ) : (
+            <Sidebar />
+          )}
+        </div>
+      )}
 
       {/* Main Content Area */}
       <div className="flex-1">
-        {/* Navbar */}
-        <Navbar />
+        {/* Conditionally render Navbar */}
+        {!isAuthRoute && <Navbar />}
 
         {/* Routes */}
         <Routes>
@@ -90,9 +95,10 @@ function App() {
 
   return (
     <DarkModeProvider>
-      <Router>
+      {/* Wrap everything inside BrowserRouter */}
+      <BrowserRouter>
         <AppLayout />
-      </Router>
+      </BrowserRouter>
     </DarkModeProvider>
   );
 }
