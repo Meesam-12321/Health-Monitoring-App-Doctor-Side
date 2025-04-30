@@ -1,9 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
+import { DarkModeContext } from "../../Context/DarkModeContext"; // Import DarkModeContext
 
 const Chatbot = () => {
   const [messages, setMessages] = useState([]);
   const [currentMessage, setCurrentMessage] = useState('');
   const [chatId, setChatId] = useState(null); // Store chat ID
+
+  const { darkMode } = useContext(DarkModeContext); // Access darkMode state
 
   // Generate a unique chat ID if not already created
   const ensureChatId = () => {
@@ -58,24 +61,28 @@ const Chatbot = () => {
   };
 
   return (
-    <div className="flex flex-col h-screen bg-gray-900 text-white p-4">
+    <div className={`flex flex-col h-screen ${darkMode ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-900'} p-4`}>
       {/* Chat Messages */}
-      <div className="flex-1 overflow-y-auto bg-gray-800 rounded-lg p-4 space-y-3">
+      <div
+        className={`flex-1 overflow-y-auto ${darkMode ? 'bg-gray-800' : 'bg-white'} rounded-lg p-4 space-y-3`}
+      >
         {messages.length === 0 ? (
-          <p className="text-center text-gray-400">Start the conversation!</p>
+          <p className={`text-center ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>Start the conversation!</p>
         ) : (
           messages.map((msg, index) => (
             <div
               key={index}
               className={`p-3 rounded-lg ${
                 msg.role === 'bot'
-                  ? 'bg-gray-700 text-gray-200 self-start'
-                  : 'bg-blue-600 text-white self-end'
+                  ? darkMode
+                    ? 'bg-gray-700 text-gray-200 self-start'
+                    : 'bg-gray-200 text-gray-900 self-start'
+                  : darkMode
+                  ? 'bg-blue-600 text-white self-end'
+                  : 'bg-blue-500 text-white self-end'
               }`}
             >
-              <span className="font-semibold">
-                {msg.role === 'bot' ? 'Bot' : 'You'}:
-              </span>
+              <span className="font-semibold">{msg.role === 'bot' ? 'Bot' : 'You'}:</span>
               <p>{msg.content}</p>
             </div>
           ))
@@ -86,13 +93,19 @@ const Chatbot = () => {
       <div className="mt-4 flex items-center gap-2">
         <input
           type="text"
-          className="flex-1 bg-gray-800 text-gray-200 p-3 rounded-lg border border-gray-700 focus:outline-none focus:ring focus:ring-blue-600"
+          className={`flex-1 p-3 rounded-lg border focus:outline-none focus:ring ${
+            darkMode ? 'bg-gray-800 text-gray-200 border-gray-700 focus:ring-blue-600' : 'bg-white text-gray-900 border-gray-300 focus:ring-blue-500'
+          }`}
           placeholder="Type your message..."
           value={currentMessage}
           onChange={(e) => setCurrentMessage(e.target.value)}
         />
         <button
-          className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition"
+          className={`px-6 py-3 rounded-lg transition ${
+            darkMode
+              ? 'bg-blue-600 hover:bg-blue-700 text-white'
+              : 'bg-blue-500 hover:bg-blue-600 text-white'
+          }`}
           onClick={handleSendMessage}
         >
           Send
