@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect } from "react";
-import { FaCalendarAlt, FaUserFriends, FaBell, FaFileMedical, FaSearch, FaChartLine, FaClipboardList, FaPencilAlt, FaPlus } from "react-icons/fa";
+import { FaCalendarAlt, FaUserFriends, FaBell, FaFileMedical, FaSearch, FaChartLine, FaClipboardList } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import { DarkModeContext } from "../Context/DarkModeContext";
@@ -12,19 +12,7 @@ const Dashboard = () => {
   const [displayedText, setDisplayedText] = useState("");
   const [animationComplete, setAnimationComplete] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-  const [showManualEntryModal, setShowManualEntryModal] = useState(false);
-  const [selectedPatient, setSelectedPatient] = useState(null);
   const typingSpeed = 100;
-
-  // Form state for manual entry
-  const [manualEntry, setManualEntry] = useState({
-    bloodPressure: "",
-    heartRate: "",
-    temperature: "",
-    glucoseLevel: "",
-    oxygenLevel: "",
-    timestamp: new Date().toISOString().slice(0, 16) // Default to current time in yyyy-MM-ddThh:mm format
-  });
 
   useEffect(() => {
     // Only run the typing animation once and stop when complete
@@ -39,26 +27,37 @@ const Dashboard = () => {
     }
   }, [displayedText, animationComplete]);
 
+  // Updated statistics with more realistic figures
   const stats = [
-    { title: "Total Patients", value: 45, icon: <FaUserFriends />, color: darkMode ? "from-blue-400 to-blue-600" : "from-blue-500 to-blue-700" },
-    { title: "Appointments Today", value: 8, icon: <FaCalendarAlt />, color: darkMode ? "from-emerald-400 to-emerald-600" : "from-green-500 to-green-700" },
-    { title: "Pending Alerts", value: 3, icon: <FaBell />, color: darkMode ? "from-amber-400 to-amber-600" : "from-yellow-500 to-yellow-700" },
-    { title: "Prescriptions Issued", value: 120, icon: <FaFileMedical />, color: darkMode ? "from-violet-400 to-violet-600" : "from-purple-500 to-purple-700" },
+    { title: "Total Patients", value: 4, icon: <FaUserFriends />, color: darkMode ? "from-blue-400 to-blue-600" : "from-blue-500 to-blue-700" },
+    { title: "Appointments Today", value: 10, icon: <FaCalendarAlt />, color: darkMode ? "from-emerald-400 to-emerald-600" : "from-green-500 to-green-700" },
+    { title: "Pending Alerts", value: 10, icon: <FaBell />, color: darkMode ? "from-amber-400 to-amber-600" : "from-yellow-500 to-yellow-700" },
+    { title: "Prescriptions Issued", value: 2, icon: <FaFileMedical />, color: darkMode ? "from-violet-400 to-violet-600" : "from-purple-500 to-purple-700" },
   ];
 
+  // Updated patients without wearable references
   const patients = [
-    { id: 1, name: "Aleena Sehar", age: 21, condition: "Diabetes", status: "Stable", lastVisit: "2 days ago", hasWearable: true },
-    { id: 2, name: "Meesam Imran", age: 38, condition: "Hypertension", status: "Improving", lastVisit: "1 week ago", hasWearable: false },
-    { id: 3, name: "Emily Johnson", age: 29, condition: "Asthma", status: "Needs Review", lastVisit: "3 days ago", hasWearable: true },
-    { id: 4, name: "Michael Brown", age: 50, condition: "Heart Disease", status: "Critical", lastVisit: "Today", hasWearable: false },
+    { id: 1, name: "Aleena Sehar", age: 21, condition: "Diabetes", status: "Stable", lastVisit: "2 days ago" },
+    { id: 2, name: "Meesam Imran", age: 38, condition: "Hypertension", status: "Improving", lastVisit: "1 week ago" },
+    { id: 3, name: "Mudasser Raza", age: 29, condition: "Asthma", status: "Needs Review", lastVisit: "3 days ago" },
+    { id: 4, name: "Adnan Bashir", age: 50, condition: "Heart Disease", status: "Critical", lastVisit: "Today" },
+    { id: 5, name: "Sonia", age: 45, condition: "Migraine", status: "Stable", lastVisit: "Yesterday" },
+    { id: 6, name: "Farhad", age: 62, condition: "Arthritis", status: "Improving", lastVisit: "4 days ago" },
   ];
 
+  // Expanded list of upcoming appointments
   const upcomingAppointments = [
-    { id: 1, patient: "John Doe", time: "10:00 AM", date: "Today" },
-    { id: 2, patient: "Sarah Williams", time: "2:30 PM", date: "Today" },
-    { id: 3, patient: "Robert Chen", time: "9:15 AM", date: "Tomorrow" },
+    { id: 1, patient: "Faria", time: "08:30 AM", date: "Today" },
+    { id: 2, patient: "Esha", time: "09:15 AM", date: "Today" },
+    { id: 3, patient: "Raheel", time: "10:00 AM", date: "Today" },
+    { id: 4, patient: "Aleena Sehar", time: "11:30 AM", date: "Today" },
+    { id: 5, patient: "Areej", time: "01:00 PM", date: "Today" },
+    { id: 6, patient: "Mustafa", time: "02:30 PM", date: "Today" },
+    { id: 7, patient: "Marij", time: "03:15 PM", date: "Today" },
+    { id: 8, patient: "Abdullah", time: "04:00 PM", date: "Today" },
+    { id: 9, patient: "Asma", time: "09:00 AM", date: "Tomorrow" },
+    { id: 10, patient: "Arshad", time: "10:30 AM", date: "Tomorrow" },
   ];
-
   const filteredPatients = patients.filter(patient => 
     patient.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     patient.condition.toLowerCase().includes(searchTerm.toLowerCase())
@@ -78,45 +77,9 @@ const Dashboard = () => {
       alert("You are not logged in. Please log in to access Chat.");
     }
   };
-  // Add this right after handleChatNavigation function
-const handlePrescriptionNavigation = () => {
-  navigate("/prescription");
-};
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setManualEntry(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
-
-  const handleManualEntrySubmit = (e) => {
-    e.preventDefault();
-    
-    // Here you would typically send this data to your backend
-    console.log("Manual entry submitted for patient:", selectedPatient);
-    console.log("Data:", manualEntry);
-    
-    // For demo purposes, show alert
-    alert(`Data submitted successfully for ${selectedPatient.name}`);
-    
-    // Reset form and close modal
-    setManualEntry({
-      bloodPressure: "",
-      heartRate: "",
-      temperature: "",
-      glucoseLevel: "",
-      oxygenLevel: "",
-      timestamp: new Date().toISOString().slice(0, 16)
-    });
-    setShowManualEntryModal(false);
-    setSelectedPatient(null);
-  };
-
-  const openManualEntryModal = (patient) => {
-    setSelectedPatient(patient);
-    setShowManualEntryModal(true);
+  const handlePrescriptionNavigation = () => {
+    navigate("/prescription");
   };
 
   return (
@@ -176,7 +139,6 @@ const handlePrescriptionNavigation = () => {
               <FaChartLine className="text-lg" />
               <span>Chat</span>
             </motion.button>
-            {/* Add this button next to the Chat button */}
             <motion.button
               onClick={handlePrescriptionNavigation}
               className={`px-6 py-3 rounded-lg transition-all duration-300 shadow-md flex items-center gap-2 ${
@@ -226,9 +188,8 @@ const handlePrescriptionNavigation = () => {
             </motion.div>
           ))}
         </div>
-
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-          {/* Upcoming Appointments */}
+          {/* Upcoming Appointments - with show all functionality */}
           <motion.div 
             className={`p-6 rounded-xl shadow-lg col-span-1 ${
               darkMode 
@@ -243,7 +204,8 @@ const handlePrescriptionNavigation = () => {
               <FaCalendarAlt /> Today's Appointments
             </h2>
             <div className="space-y-3">
-              {upcomingAppointments.map((appointment) => (
+              {/* Show limited appointments initially */}
+              {upcomingAppointments.slice(0, 5).map((appointment) => (
                 <motion.div
                   key={appointment.id}
                   className={`p-4 rounded-lg ${
@@ -263,16 +225,20 @@ const handlePrescriptionNavigation = () => {
                 </motion.div>
               ))}
             </div>
-            <button className={`mt-4 w-full py-2 rounded-lg ${
-              darkMode 
-                ? 'bg-sky-600 hover:bg-sky-500 text-white' 
-                : 'bg-blue-500 hover:bg-blue-400 text-white'
-            } transition-colors duration-300`}>
+            
+            <Link 
+              to="/appointments"
+              className={`mt-4 w-full py-2 rounded-lg text-center block ${
+                darkMode 
+                  ? 'bg-sky-600 hover:bg-sky-500 text-white' 
+                  : 'bg-blue-500 hover:bg-blue-400 text-white'
+              } transition-colors duration-300`}
+            >
               View All Appointments
-            </button>
+            </Link>
           </motion.div>
 
-          {/* Patients Section in Grid Format */}
+          {/* Patients Section - with limited preview and view all functionality */}
           <motion.div 
             className={`p-6 rounded-xl shadow-lg col-span-1 lg:col-span-2 ${
               darkMode 
@@ -288,7 +254,8 @@ const handlePrescriptionNavigation = () => {
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {filteredPatients.length > 0 ? (
-                filteredPatients.map((patient) => (
+                // Only show up to 4 patients in the dashboard
+                filteredPatients.slice(0, 4).map((patient) => (
                   <motion.div 
                     key={patient.id} 
                     className={`p-4 rounded-lg ${
@@ -304,15 +271,6 @@ const handlePrescriptionNavigation = () => {
                         <p className="text-sm">Age: {patient.age}</p>
                         <p className="text-sm">Condition: {patient.condition}</p>
                         <p className={`text-xs mt-1 ${darkMode ? 'text-sky-300' : 'text-blue-600'}`}>Last visit: {patient.lastVisit}</p>
-                        
-                        {/* Wearable status indicator */}
-                        <div className={`mt-2 text-xs inline-flex items-center rounded-full px-2.5 py-1 ${
-                          patient.hasWearable 
-                            ? darkMode ? 'bg-green-900/40 text-green-300' : 'bg-green-100 text-green-800' 
-                            : darkMode ? 'bg-orange-900/40 text-orange-300' : 'bg-orange-100 text-orange-800'
-                        }`}>
-                          {patient.hasWearable ? 'Wearable Device' : 'Manual Entry'}
-                        </div>
                       </div>
                       <span className={`px-2 py-1 rounded-full text-xs ${
                         patient.status === "Stable" ? "bg-green-500 text-white" : 
@@ -323,7 +281,7 @@ const handlePrescriptionNavigation = () => {
                         {patient.status}
                       </span>
                     </div>
-                    <div className="mt-3 flex gap-2">
+                    <div className="mt-3">
                       <Link 
                         to={`/patients/${patient.id}`} 
                         className={`inline-block px-4 py-2 rounded-lg text-sm ${
@@ -334,20 +292,6 @@ const handlePrescriptionNavigation = () => {
                       >
                         View Details
                       </Link>
-                      
-                      {/* Manual Entry Button (shows only for patients without wearables) */}
-                      {!patient.hasWearable && (
-                        <button 
-                          onClick={() => openManualEntryModal(patient)}
-                          className={`inline-flex items-center px-4 py-2 rounded-lg text-sm ${
-                            darkMode 
-                              ? 'bg-emerald-600 hover:bg-emerald-500 text-white' 
-                              : 'bg-green-500 hover:bg-green-400 text-white'
-                          } transition-colors duration-300`}
-                        >
-                          <FaPencilAlt className="mr-1" /> Enter Data
-                        </button>
-                      )}
                     </div>
                   </motion.div>
                 ))
@@ -357,200 +301,20 @@ const handlePrescriptionNavigation = () => {
                 </div>
               )}
             </div>
-            <button className={`mt-4 w-full py-2 rounded-lg ${
-              darkMode 
-                ? 'bg-sky-600 hover:bg-sky-500 text-white' 
-                : 'bg-blue-500 hover:bg-blue-400 text-white'
-            } transition-colors duration-300`}>
+            
+            <Link 
+              to="/patients"
+              className={`mt-4 w-full py-2 rounded-lg text-center block ${
+                darkMode 
+                  ? 'bg-sky-600 hover:bg-sky-500 text-white' 
+                  : 'bg-blue-500 hover:bg-blue-400 text-white'
+              } transition-colors duration-300`}
+            >
               View All Patients
-            </button>
+            </Link>
           </motion.div>
         </div>
       </div>
-
-      {/* Manual Entry Modal */}
-      {showManualEntryModal && selectedPatient && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <motion.div 
-            className={`w-full max-w-lg rounded-xl shadow-2xl ${
-              darkMode 
-                ? 'bg-gray-800 border border-gray-700' 
-                : 'bg-white border border-blue-200'
-            } p-6`}
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-          >
-            <div className="flex justify-between items-center mb-4">
-              <h2 className={`text-xl font-bold ${darkMode ? 'text-sky-300' : 'text-blue-800'}`}>
-                Manual Health Data Entry
-              </h2>
-              <button 
-                onClick={() => setShowManualEntryModal(false)}
-                className={`p-2 rounded-full ${
-                  darkMode 
-                    ? 'hover:bg-gray-700 text-gray-300' 
-                    : 'hover:bg-gray-100 text-gray-600'
-                }`}
-              >
-                ✕
-              </button>
-            </div>
-            
-            <div className={`mb-4 p-3 rounded-lg ${
-              darkMode 
-                ? 'bg-gray-700/80' 
-                : 'bg-blue-50'
-            }`}>
-              <p className="font-medium">{selectedPatient.name}</p>
-              <p className="text-sm">Age: {selectedPatient.age} | Condition: {selectedPatient.condition}</p>
-            </div>
-            
-            <form onSubmit={handleManualEntrySubmit}>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                <div>
-                  <label className={`block text-sm font-medium mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                    Blood Pressure (mmHg)
-                  </label>
-                  <input 
-                    type="text" 
-                    name="bloodPressure"
-                    placeholder="e.g. 120/80"
-                    value={manualEntry.bloodPressure}
-                    onChange={handleInputChange}
-                    className={`w-full p-2 rounded-lg border ${
-                      darkMode 
-                        ? 'bg-gray-700 border-gray-600 text-white' 
-                        : 'bg-white border-gray-300 text-gray-900'
-                    } focus:outline-none focus:ring-2 focus:ring-blue-500`}
-                    required
-                  />
-                </div>
-                
-                <div>
-                  <label className={`block text-sm font-medium mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                    Heart Rate (bpm)
-                  </label>
-                  <input 
-                    type="number" 
-                    name="heartRate"
-                    placeholder="e.g. 75"
-                    value={manualEntry.heartRate}
-                    onChange={handleInputChange}
-                    className={`w-full p-2 rounded-lg border ${
-                      darkMode 
-                        ? 'bg-gray-700 border-gray-600 text-white' 
-                        : 'bg-white border-gray-300 text-gray-900'
-                    } focus:outline-none focus:ring-2 focus:ring-blue-500`}
-                    required
-                  />
-                </div>
-                
-                <div>
-                  <label className={`block text-sm font-medium mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                    Temperature (°C)
-                  </label>
-                  <input 
-                    type="number" 
-                    name="temperature"
-                    placeholder="e.g. 37.0"
-                    step="0.1"
-                    value={manualEntry.temperature}
-                    onChange={handleInputChange}
-                    className={`w-full p-2 rounded-lg border ${
-                      darkMode 
-                        ? 'bg-gray-700 border-gray-600 text-white' 
-                        : 'bg-white border-gray-300 text-gray-900'
-                    } focus:outline-none focus:ring-2 focus:ring-blue-500`}
-                    required
-                  />
-                </div>
-                
-                <div>
-                  <label className={`block text-sm font-medium mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                    Glucose Level (mg/dL)
-                  </label>
-                  <input 
-                    type="number" 
-                    name="glucoseLevel"
-                    placeholder="e.g. 95"
-                    value={manualEntry.glucoseLevel}
-                    onChange={handleInputChange}
-                    className={`w-full p-2 rounded-lg border ${
-                      darkMode 
-                        ? 'bg-gray-700 border-gray-600 text-white' 
-                        : 'bg-white border-gray-300 text-gray-900'
-                    } focus:outline-none focus:ring-2 focus:ring-blue-500`}
-                    required
-                  />
-                </div>
-                
-                <div>
-                  <label className={`block text-sm font-medium mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                    Oxygen Level (%)
-                  </label>
-                  <input 
-                    type="number" 
-                    name="oxygenLevel"
-                    placeholder="e.g. 98"
-                    min="0" 
-                    max="100"
-                    value={manualEntry.oxygenLevel}
-                    onChange={handleInputChange}
-                    className={`w-full p-2 rounded-lg border ${
-                      darkMode 
-                        ? 'bg-gray-700 border-gray-600 text-white' 
-                        : 'bg-white border-gray-300 text-gray-900'
-                    } focus:outline-none focus:ring-2 focus:ring-blue-500`}
-                    required
-                  />
-                </div>
-                
-                <div>
-                  <label className={`block text-sm font-medium mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                    Timestamp
-                  </label>
-                  <input 
-                    type="datetime-local" 
-                    name="timestamp"
-                    value={manualEntry.timestamp}
-                    onChange={handleInputChange}
-                    className={`w-full p-2 rounded-lg border ${
-                      darkMode 
-                        ? 'bg-gray-700 border-gray-600 text-white' 
-                        : 'bg-white border-gray-300 text-gray-900'
-                    } focus:outline-none focus:ring-2 focus:ring-blue-500`}
-                    required
-                  />
-                </div>
-              </div>
-              
-              <div className="flex justify-end gap-3">
-                <button 
-                  type="button"
-                  onClick={() => setShowManualEntryModal(false)}
-                  className={`px-4 py-2 rounded-lg ${
-                    darkMode 
-                      ? 'bg-gray-700 hover:bg-gray-600 text-white' 
-                      : 'bg-gray-200 hover:bg-gray-300 text-gray-900'
-                  }`}
-                >
-                  Cancel
-                </button>
-                <button 
-                  type="submit"
-                  className={`px-6 py-2 rounded-lg flex items-center ${
-                    darkMode 
-                      ? 'bg-emerald-600 hover:bg-emerald-500 text-white' 
-                      : 'bg-green-500 hover:bg-green-400 text-white'
-                  }`}
-                >
-                  <FaPlus className="mr-2" /> Save Data
-                </button>
-              </div>
-            </form>
-          </motion.div>
-        </div>
-      )}
     </div>
   );
 };

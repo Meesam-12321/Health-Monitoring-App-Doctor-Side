@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
-import Navbar from "./components/Navbar/Navbar";
-import Sidebar from "./components/Sidebar/Sidebar";
-import ChatbotSidebar from "./components/Sidebar/ChatbotSidebar";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import MainLayout from "./layouts/MainLayout"; // ✅ Corrected path
 import Dashboard from "./pages/Dashboard";
 import Appointments from "./pages/Appointments";
 import AppointmentDetails from "./pages/AppointmentDetails";
@@ -18,78 +16,14 @@ import EditProfile from "./pages/EditProfile";
 import LandingPage from "./pages/LandingPage";
 import Settings from "./pages/Settings";
 import PrescriptionForm from './pages/Prescriptions';
+import AboutPage from './pages/AboutPage'; // ❗️About page is standalone
 import { DarkModeProvider } from "./Context/DarkModeContext";
-
-const AppLayout = () => {
-  const location = useLocation();
-  const isChatbotRoute = location.pathname === "/chatbot";
-
-  // Hide Navbar and Sidebar on login and register pages
-  const isAuthRoute = location.pathname === "/login" || location.pathname === "/register" || location.pathname === "/" || location.pathname === "/chat";
-
-  // State to manage current chat ID
-  const [currentChatId, setCurrentChatId] = useState(null);
-
-  // Handler for starting a new chat
-  const handleStartNewChat = (newChatId) => {
-    setCurrentChatId(newChatId); // Update current chat ID
-  };
-
-  return (
-    <div className="flex min-h-screen overflow-x-hidden"> {/* Prevent horizontal overflow */}
-      {/* Conditionally render Sidebar */}
-      {!isAuthRoute && (
-        <div className="w-64"> {/* Fixed width for sidebar */}
-          {isChatbotRoute ? (
-            <ChatbotSidebar
-              onStartNewChat={handleStartNewChat} // Pass handler to ChatbotSidebar
-              currentChatId={currentChatId}
-            />
-          ) : (
-            <Sidebar />
-          )}
-        </div>
-      )}
-
-      {/* Main Content Area */}
-      <div className="flex-1 overflow-x-hidden"> {/* Prevent horizontal overflow */}
-        {/* Conditionally render Navbar */}
-        {!isAuthRoute && <Navbar />}
-
-        {/* Routes */}
-        <Routes>
-          <Route path="/" element={<LandingPage />} />
-          <Route path="/login" element={<DoctorLogin />} />
-          <Route path="/register" element={<DoctorRegister />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/appointments" element={<Appointments />} />
-          <Route path="/appointments/:id" element={<AppointmentDetails />} />
-          <Route path="/appointmentRequests" element={<AppointmentRequests />} />
-          <Route path="/chat" element={<ChatPage />} />
-          <Route
-            path="/chatbot"
-            element={<Chatbot chatId={currentChatId} />} // Pass current chat ID to Chatbot
-          />
-          <Route path="/patients" element={<Patients />} />
-          <Route path="/patients/:id" element={<PatientDetails />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/profile/edit" element={<EditProfile />} />
-          <Route path="/settings" element={<Settings />} />
-          <Route path="/prescription" element={<PrescriptionForm />} />
-        </Routes>
-      </div>
-    </div>
-  );
-};
-
 
 function App() {
   const [darkMode, setDarkMode] = useState(() => {
-    // Get the current theme from localStorage
     return localStorage.getItem("darkMode") === "true";
   });
 
-  // Apply theme when darkMode changes
   useEffect(() => {
     if (darkMode) {
       document.documentElement.classList.add("dark");
@@ -100,11 +34,47 @@ function App() {
     }
   }, [darkMode]);
 
+  const [currentChatId, setCurrentChatId] = useState(null);
+
+  const handleStartNewChat = (newChatId) => {
+    setCurrentChatId(newChatId);
+  };
+
   return (
     <DarkModeProvider>
-      {/* Wrap everything inside BrowserRouter */}
       <BrowserRouter>
-        <AppLayout />
+        <Routes>
+          {/* Standalone Pages (No Navbar/Sidebar) */}
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/login" element={<DoctorLogin />} />
+          <Route path="/register" element={<DoctorRegister />} />
+          <Route path="/about" element={<AboutPage />} /> {/* ✅ No layout */}
+
+          {/* Pages Wrapped in MainLayout */}
+          <Route path="/dashboard" element={<MainLayout><Dashboard /></MainLayout>} />
+          <Route path="/appointments" element={<MainLayout><Appointments /></MainLayout>} />
+          <Route path="/appointments/:id" element={<MainLayout><AppointmentDetails /></MainLayout>} />
+          <Route path="/appointmentRequests" element={<MainLayout><AppointmentRequests /></MainLayout>} />
+          <Route path="/patients" element={<MainLayout><Patients /></MainLayout>} />
+          <Route path="/patients/:id" element={<MainLayout><PatientDetails /></MainLayout>} />
+          <Route path="/profile" element={<MainLayout><Profile /></MainLayout>} />
+          <Route path="/profile/edit" element={<MainLayout><EditProfile /></MainLayout>} />
+          <Route path="/settings" element={<MainLayout><Settings /></MainLayout>} />
+          <Route path="/prescription" element={<MainLayout><PrescriptionForm /></MainLayout>} />
+
+          {/* Chatbot has optional Chat Sidebar */}
+          <Route
+            path="/chatbot"
+            element={
+              <MainLayout isChatbot={true} currentChatId={currentChatId} onStartNewChat={handleStartNewChat}>
+                <Chatbot chatId={currentChatId} />
+              </MainLayout>
+            }
+          />
+
+          {/* Chat Page (Standalone) */}
+          <Route path="/chat" element={<ChatPage />} />
+        </Routes>
       </BrowserRouter>
     </DarkModeProvider>
   );

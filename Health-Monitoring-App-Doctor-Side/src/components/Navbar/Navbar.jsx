@@ -134,7 +134,7 @@ const Navbar = () => {
                   />
                 </div>
                 <span className="text-gray-300 group-hover:text-white text-sm font-medium transition-colors duration-300">
-                  Dr. Smith
+                  Dr. Meesam
                   <span className="block text-xs text-gray-400 group-hover:text-gray-300">Online</span>
                 </span>
               </NavLink>
