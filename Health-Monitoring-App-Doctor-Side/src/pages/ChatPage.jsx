@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import { 
   MessageSquare, 
   Send, 
@@ -20,10 +20,12 @@ import {
   Check,
   Clock
 } from "lucide-react";
+import { DarkModeContext } from "../Context/DarkModeContext";
 import { formatDistanceToNow } from "date-fns";
 
 const DoctorChat = () => {
   // State management
+  const { darkMode } = useContext(DarkModeContext);
   const [conversations, setConversations] = useState([]);
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
@@ -44,10 +46,10 @@ const DoctorChat = () => {
   // Dummy doctor profile
   const DUMMY_DOCTOR = {
     id: "d-001",
-    name: "Dr. Sarah Johnson",
+    name: "Dr. Meesam",
     specialty: "Cardiologist",
     avatar: null,
-    initials: "SJ",
+    initials: "DM",
     online: true
   };
 
@@ -56,7 +58,7 @@ const DoctorChat = () => {
     {
       _id: "c-001",
       patientId: "p-001",
-      patientName: "James Wilson",
+      patientName: "Faseeha",
       lastMessage: "Thank you for the prescription, doctor. I'll follow your advice.",
       lastMessageTimestamp: new Date(Date.now() - 1000 * 60 * 5).toISOString(),
       unreadCount: { doctor: 2 }
@@ -64,7 +66,7 @@ const DoctorChat = () => {
     {
       _id: "c-002",
       patientId: "p-002",
-      patientName: "Emily Parker",
+      patientName: "Areej",
       lastMessage: "When should I schedule my next appointment?",
       lastMessageTimestamp: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(),
       unreadCount: { doctor: 0 }
@@ -72,7 +74,7 @@ const DoctorChat = () => {
     {
       _id: "c-003",
       patientId: "p-003",
-      patientName: "Robert Brown",
+      patientName: "Noor Naveed",
       lastMessage: "The new medication seems to be working well.",
       lastMessageTimestamp: new Date(Date.now() - 1000 * 60 * 60 * 12).toISOString(),
       unreadCount: { doctor: 0 }
@@ -80,7 +82,7 @@ const DoctorChat = () => {
     {
       _id: "c-004",
       patientId: "p-004",
-      patientName: "Sophia Martinez",
+      patientName: "Fizza",
       lastMessage: "I've been experiencing some side effects.",
       lastMessageTimestamp: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString(),
       unreadCount: { doctor: 3 }
@@ -88,7 +90,7 @@ const DoctorChat = () => {
     {
       _id: "c-005",
       patientId: "p-005",
-      patientName: "William Davis",
+      patientName: "Muddaser Raza",
       lastMessage: "My blood pressure readings are attached.",
       lastMessageTimestamp: new Date(Date.now() - 1000 * 60 * 60 * 48).toISOString(),
       unreadCount: { doctor: 0 }
@@ -103,7 +105,7 @@ const DoctorChat = () => {
         senderId: "p-001",
         receiverId: "d-001",
         senderModel: "Patient",
-        message: "Hello Dr. Johnson, I've been experiencing chest pain for the past two days.",
+        message: "Hello Dr. Meesam, I've been experiencing chest pain for the past two days.",
         timestamp: new Date(Date.now() - 1000 * 60 * 60).toISOString(),
         delivered: true
       },
@@ -112,7 +114,7 @@ const DoctorChat = () => {
         senderId: "d-001",
         receiverId: "p-001",
         senderModel: "Doctor",
-        message: "Hi James. Can you describe the pain? Is it sharp or dull? Does it come and go?",
+        message: "Hi Faseeha. Can you describe the pain? Is it sharp or dull? Does it come and go?",
         timestamp: new Date(Date.now() - 1000 * 60 * 55).toISOString(),
         delivered: true
       },
@@ -168,7 +170,7 @@ const DoctorChat = () => {
         senderId: "p-002",
         receiverId: "d-001",
         senderModel: "Patient",
-        message: "Good morning, Dr. Johnson. How are you today?",
+        message: "Good morning, Dr. Meesam. How are you today?",
         timestamp: new Date(Date.now() - 1000 * 60 * 180).toISOString(),
         delivered: true
       },
@@ -177,7 +179,7 @@ const DoctorChat = () => {
         senderId: "d-001", 
         receiverId: "p-002",
         senderModel: "Doctor",
-        message: "I'm well, thank you Emily. How can I help you today?",
+        message: "I'm well, thank you . How can I help you today?",
         timestamp: new Date(Date.now() - 1000 * 60 * 175).toISOString(),
         delivered: true
       },
@@ -249,9 +251,9 @@ const DoctorChat = () => {
   // Dummy patient details
   const DUMMY_PATIENT_DETAILS = {
     "p-001": {
-      name: "James Wilson",
+      name: "Faseeha",
       age: 57,
-      email: "james.wilson@example.com",
+      email: "Faseeha.wilson@example.com",
       phone: "+1 (555) 123-4567",
       lastVisit: "March 15, 2025",
       medicalHistory: [
@@ -262,9 +264,9 @@ const DoctorChat = () => {
       ]
     },
     "p-002": {
-      name: "Emily Parker",
+      name: "Areej",
       age: 34,
-      email: "emily.parker@example.com",
+      email: "Areej.parker@example.com",
       phone: "+1 (555) 987-6543",
       lastVisit: "April 2, 2025",
       medicalHistory: [
@@ -507,7 +509,7 @@ const DoctorChat = () => {
     return (
       <div className="w-72 border-l border-gray-800 bg-gray-900 p-4 overflow-y-auto">
         <div className="flex justify-between items-center mb-6">
-          <h3 className="text-xl font-semibold text-white">Patient Info</h3>
+        <h3 className={`text-xl font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Patient Info</h3>
           <button 
             onClick={() => setShowPatientInfo(false)}
             className="text-gray-400 hover:text-white"
@@ -520,7 +522,7 @@ const DoctorChat = () => {
           <div className="w-20 h-20 bg-gray-800 rounded-full mx-auto flex items-center justify-center mb-4">
             <User className="text-gray-400 w-10 h-10" />
           </div>
-          <h4 className="text-white text-lg font-medium text-center">{patientDetails.name}</h4>
+          <h4 className={`text-lg font-medium text-center ${darkMode ? 'text-white' : 'text-gray-900'}`}>{patientDetails.name}</h4>
           <p className="text-gray-400 text-center">{patientDetails.age || "N/A"} years old</p>
         </div>
         
@@ -553,7 +555,7 @@ const DoctorChat = () => {
 
   // Main component render
   return (
-    <div className="flex h-screen bg-gray-900">
+    <div className={`flex h-screen ${darkMode ? "bg-gray-900" : "bg-gray-100"}`}>
       {/* Mobile sidebar toggle button */}
       <button 
         onClick={() => setShowSidebar(!showSidebar)}
@@ -563,20 +565,19 @@ const DoctorChat = () => {
       </button>
       
       {/* Conversations sidebar */}
-      <div 
-        className={`${showSidebar ? 'translate-x-0' : '-translate-x-full'} 
-                   md:translate-x-0 transform transition-transform duration-300 ease-in-out
-                   w-full md:w-80 border-r border-gray-800 flex flex-col
-                   absolute md:relative z-10 h-full bg-gray-900`}
-      >
+      <div className={`${showSidebar ? 'translate-x-0' : '-translate-x-full'} 
+             md:translate-x-0 transform transition-transform duration-300 ease-in-out
+             w-full md:w-80 border-r ${darkMode ? 'border-gray-800' : 'border-gray-300'} flex flex-col
+             absolute md:relative z-10 h-full ${darkMode ? 'bg-gray-900' : 'bg-white'}`}
+        >
         {/* Doctor profile section */}
-        <div className="p-4 bg-gray-800 border-b border-gray-700">
+        <div className={`p-4 ${darkMode ? 'bg-gray-800 border-b border-gray-700' : 'bg-gray-100 border-b border-gray-300'}`}>
           <div className="flex items-center mb-4">
             <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center">
               <span className="text-white font-bold">{doctorProfile?.initials || "DR"}</span>
             </div>
             <div className="ml-3">
-              <h3 className="text-white font-medium">
+            <h3 className={`${darkMode ? 'text-white' : 'text-gray-900'} font-medium`}>
                 {doctorProfile?.name || "Doctor"}
               </h3>
               <div className="flex items-center">
@@ -587,12 +588,11 @@ const DoctorChat = () => {
           </div>
           
           {/* Search input */}
-          <div className="flex items-center space-x-2 bg-gray-700 rounded-lg px-3 py-2">
+          <div className={`flex items-center space-x-2 ${darkMode ? 'bg-gray-700' : 'bg-gray-200'} rounded-lg px-3 py-2`}>
             <Search className="text-gray-400 w-4 h-4" />
-            <input
-              type="text"
+            <input type="text"
               placeholder="Search patients..."
-              className="bg-transparent text-white placeholder-gray-400 focus:outline-none w-full text-sm"
+              className={`bg-transparent ${darkMode ? 'text-white placeholder-gray-400' : 'text-gray-800 placeholder-gray-500'} focus:outline-none w-full text-sm`}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
@@ -609,7 +609,7 @@ const DoctorChat = () => {
               <p>Loading conversations...</p>
             </div>
           ) : filteredConversations.length === 0 ? (
-            <div className="text-center text-gray-400 py-8">
+            <div className={`text-center ${darkMode ? 'text-gray-400' : 'text-gray-600'} py-8`}>
               <div className="inline-block p-3 bg-gray-800 rounded-full mb-2">
                 <AlertCircle className="w-6 h-6" />
               </div>
@@ -628,12 +628,17 @@ const DoctorChat = () => {
               <div
                 key={chat._id}
                 onClick={() => handleSelectChat(chat)}
-                className={`flex items-center p-3 hover:bg-gray-800 cursor-pointer transition-colors duration-200 ${
-                  selectedChat?._id === chat._id ? "bg-gray-800" : ""
+                className={`flex items-center p-3 cursor-pointer transition-colors duration-200 ${
+                  selectedChat?._id === chat._id 
+                    ? darkMode ? "bg-gray-800" : "bg-gray-300" 
+                    : ""
+                } ${
+                  darkMode ? "hover:bg-gray-800" : "hover:bg-gray-200"
                 }`}
               >
                 <div className="relative">
-                  <div className="w-12 h-12 bg-gray-700 rounded-full flex items-center justify-center">
+                <div className={`${darkMode ? 'bg-gray-700' : 'bg-gray-200'} w-12 h-12 rounded-full flex items-center justify-center`}>
+
                     <User className="text-gray-400 w-6 h-6" />
                   </div>
                   {chat.unreadCount?.doctor > 0 && (
@@ -644,7 +649,8 @@ const DoctorChat = () => {
                 </div>
                 <div className="ml-3 flex-1 overflow-hidden">
                   <div className="flex justify-between items-center">
-                    <span className="text-white font-medium truncate">
+                  <span className={`${darkMode ? 'text-white' : 'text-gray-900'} font-medium truncate`}>
+
                       {chat.patientName}
                     </span>
                     <span className="text-gray-400 text-xs whitespace-nowrap">
@@ -652,7 +658,8 @@ const DoctorChat = () => {
                     </span>
                   </div>
                   <div className="flex items-center justify-between mt-1">
-                    <p className="text-gray-400 text-sm truncate max-w-[80%]">
+                  <p className={`${darkMode ? 'text-gray-400' : 'text-gray-600'} text-sm truncate max-w-[80%]`}>
+
                       {chat.lastMessage}
                     </p>
                   </div>
@@ -663,7 +670,7 @@ const DoctorChat = () => {
         </div>
         
         {/* Doctor menu options */}
-        <div className="p-3 bg-gray-800 border-t border-gray-700">
+        <div className={`p-3 ${darkMode ? 'bg-gray-800 border-t border-gray-700' : 'bg-gray-100 border-t border-gray-300'}`}>
           <div className="flex justify-around">
             <button className="p-2 rounded-full hover:bg-gray-700 text-gray-400 hover:text-white transition-colors">
               <Calendar className="w-5 h-5" />
@@ -685,109 +692,117 @@ const DoctorChat = () => {
       <div className="flex-1 flex flex-col">
         {selectedChat ? (
           <>
-            {/* Chat header with patient info */}
-            <div className="p-3 bg-gray-800 flex items-center justify-between shadow-md">
-              <div className="flex items-center">
-                <div className="w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center">
-                  <User className="text-gray-400 w-5 h-5" />
-                </div>
-                <div className="ml-3">
-                  <span className="text-white font-medium">{selectedChat.patientName}</span>
-                  <div className="flex items-center">
-                    <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
-                    <span className="text-gray-400 text-xs">Online</span>
-                  </div>
+          {/* Chat header with patient info */}
+          <div className={`p-3 flex items-center justify-between shadow-md ${darkMode ? 'bg-gray-800' : 'bg-gray-100 border-b border-gray-300'}`}>
+            <div className="flex items-center">
+              <div className={`w-10 h-10 rounded-full flex items-center justify-center ${darkMode ? 'bg-gray-700' : 'bg-gray-300'}`}>
+                <User className="text-gray-400 w-5 h-5" />
+              </div>
+              <div className="ml-3">
+                <span className={`${darkMode ? 'text-white' : 'text-gray-900'} font-medium`}>{selectedChat.patientName}</span>
+                <div className="flex items-center">
+                  <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
+                  <span className="text-gray-400 text-xs">Online</span>
                 </div>
               </div>
-              <div className="flex items-center space-x-2">
-                <button className="p-2 rounded-full hover:bg-gray-700 text-gray-400 hover:text-white transition-colors">
-                  <Phone className="w-5 h-5" />
-                </button>
-                <button className="p-2 rounded-full hover:bg-gray-700 text-gray-400 hover:text-white transition-colors">
-                  <Video className="w-5 h-5" />
-                </button>
-                <button 
-                  onClick={() => setShowPatientInfo(!showPatientInfo)}
-                  className={`p-2 rounded-full hover:bg-gray-700 transition-colors 
-                             ${showPatientInfo ? 'bg-gray-700 text-white' : 'text-gray-400'}`}
-                >
-                  <Info className="w-5 h-5" />
-                </button>
+            </div>
+            <div className="flex items-center space-x-2">
+              <button className={`p-2 rounded-full transition-colors ${
+                darkMode ? 'hover:bg-gray-700 text-gray-400 hover:text-white' : 'hover:bg-gray-200 text-gray-600 hover:text-gray-900'
+              }`}>
+                <Phone className="w-5 h-5" />
+              </button>
+              <button className={`p-2 rounded-full transition-colors ${
+                darkMode ? 'hover:bg-gray-700 text-gray-400 hover:text-white' : 'hover:bg-gray-200 text-gray-600 hover:text-gray-900'
+              }`}>
+                <Video className="w-5 h-5" />
+              </button>
+              <button 
+                onClick={() => setShowPatientInfo(!showPatientInfo)}
+                className={`p-2 rounded-full transition-colors ${
+                  darkMode 
+                    ? `${showPatientInfo ? 'bg-gray-700 text-white' : 'text-gray-400 hover:bg-gray-700 hover:text-white'}`
+                    : `${showPatientInfo ? 'bg-gray-200 text-gray-900' : 'text-gray-600 hover:bg-gray-200 hover:text-gray-900'}`
+                }`}
+              >
+                <Info className="w-5 h-5" />
+              </button>
+            </div>
+          </div>
+
+
+{/* Messages area */}
+<div 
+  ref={messagesContainerRef}
+  className={`flex-1 overflow-y-auto p-4 ${darkMode ? 'bg-gray-900' : 'bg-gray-100'}`}
+>
+  {loading ? (
+    <div className="flex justify-center items-center h-full">
+      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+    </div>
+  ) : (
+    groupMessagesByDate().map((group, groupIndex) => (
+      <div key={groupIndex} className="mb-6">
+        <div className="flex justify-center mb-4">
+          <div className={`px-3 py-1 rounded-full ${darkMode ? 'bg-gray-800' : 'bg-gray-300'}`}>
+            <span className={`${darkMode ? 'text-gray-400' : 'text-gray-700'} text-xs`}>{group.date}</span>
+          </div>
+        </div>
+        
+        {group.messages.map((message) => (
+          <div
+            key={message._id}
+            className={`flex mb-4 ${
+              message.senderModel === "Doctor" ? "justify-end" : "justify-start"
+            } ${message.pending ? "opacity-70" : "opacity-100"}`}
+          >
+            {message.senderModel !== "Doctor" && (
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center mr-2 self-end ${darkMode ? 'bg-gray-700' : 'bg-gray-300'}`}>
+                <User className="text-gray-400 w-4 h-4" />
+              </div>
+            )}
+            
+            <div
+              className={`max-w-xs md:max-w-md px-4 py-2 rounded-lg ${
+                message.senderModel === "Doctor"
+                  ? `${darkMode ? 'bg-blue-600 text-white' : 'bg-blue-100 text-blue-900'} rounded-tr-none`
+                  : `${darkMode ? 'bg-gray-700 text-white' : 'bg-gray-200 text-gray-900'} rounded-tl-none`
+              }`}
+            >
+              <p className="text-sm break-words">{message.message}</p>
+              <div className="flex items-center justify-end mt-1">
+                <span className="text-xs opacity-75 mr-1">
+                  {formatMessageTime(message.timestamp)}
+                </span>
+
+                {message.senderModel === "Doctor" && (
+                  <span>
+                    {message.error ? (
+                      <AlertCircle className="w-3 h-3 text-red-500" />
+                    ) : message.delivered ? (
+                      <Check className="w-3 h-3 text-gray-300" />
+                    ) : message.pending ? (
+                      <Clock className="w-3 h-3 text-gray-300" />
+                    ) : (
+                      <div className="w-2 h-2 bg-gray-300 rounded-full"></div>
+                    )}
+                  </span>
+                )}
               </div>
             </div>
 
-            {/* Messages area */}
-            <div 
-              ref={messagesContainerRef}
-              className="flex-1 overflow-y-auto p-4 bg-gray-900"
-            >
-              {loading ? (
-                <div className="flex justify-center items-center h-full">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
-                </div>
-              ) : (
-                groupMessagesByDate().map((group, groupIndex) => (
-                  <div key={groupIndex} className="mb-6">
-                    <div className="flex justify-center mb-4">
-                      <div className="px-3 py-1 bg-gray-800 rounded-full">
-                        <span className="text-gray-400 text-xs">{group.date}</span>
-                      </div>
-                    </div>
-                    
-                    {group.messages.map((message) => (
-                      <div
-                        key={message._id}
-                        className={`flex mb-4 ${
-                          message.senderModel === "Doctor" ? "justify-end" : "justify-start"
-                        } ${message.pending ? "opacity-70" : "opacity-100"}`}
-                      >
-                        {message.senderModel !== "Doctor" && (
-                          <div className="w-8 h-8 bg-gray-700 rounded-full flex items-center justify-center mr-2 self-end">
-                            <User className="text-gray-400 w-4 h-4" />
-                          </div>
-                        )}
-                        
-                        <div
-                          className={`max-w-xs md:max-w-md px-4 py-2 rounded-lg ${
-                            message.senderModel === "Doctor"
-                              ? "bg-blue-600 text-white rounded-tr-none"
-                              : "bg-gray-700 text-white rounded-tl-none"
-                          }`}
-                        >
-                          <p className="text-sm break-words">{message.message}</p>
-                          <div className="flex items-center justify-end mt-1">
-                            <span className="text-xs opacity-75 mr-1">
-                              {formatMessageTime(message.timestamp)}
-                            </span>
-                            
-                            {message.senderModel === "Doctor" && (
-                              <span>
-                                {message.error ? (
-                                  <AlertCircle className="w-3 h-3 text-red-500" />
-                                ) : message.delivered ? (
-                                  <Check className="w-3 h-3 text-gray-300" />
-                                ) : message.pending ? (
-                                  <Clock className="w-3 h-3 text-gray-300" />
-                                ) : (
-                                  <div className="w-2 h-2 bg-gray-300 rounded-full"></div>
-                                )}
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                        
-                        {message.senderModel === "Doctor" && (
-                          <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center ml-2 self-end">
-                            <span className="text-white text-xs font-bold">
-                              {doctorProfile?.initials || "DR"}
-                            </span>
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                ))
-              )}
+            {message.senderModel === "Doctor" && (
+              <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center ml-2 self-end">
+                <span className="text-white text-xs font-bold">
+                  {doctorProfile?.initials || "DR"}
+                </span>
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+    ))
+  )}
               
               {/* Typing indicator */}
               {isTyping && (
@@ -809,7 +824,8 @@ const DoctorChat = () => {
             </div>
 
             {/* Message input area */}
-            <div className="p-3 bg-gray-800 shadow-lg">
+            <div className={`p-3 shadow-lg ${darkMode ? 'bg-gray-800' : 'bg-gray-100 border-t border-gray-300'}`}>
+
               <div className="flex items-center space-x-3">
                 <input
                   ref={inputRef}
@@ -818,7 +834,9 @@ const DoctorChat = () => {
                   onChange={(e) => setNewMessage(e.target.value)}
                   onKeyPress={(e) => e.key === "Enter" && handleSendMessage()}
                   onInput={handleTyping}
-                  className="flex-1 bg-gray-700 text-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                  className={`flex-1 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all
+                    ${darkMode ? 'bg-gray-700 text-white' : 'bg-white text-gray-900 border border-gray-300'}`}
+        
                   placeholder="Type a message..."
                 />
                 <button
@@ -837,12 +855,14 @@ const DoctorChat = () => {
           </>
         ) : (
           // Empty state when no chat is selected
-          <div className="flex-1 flex flex-col items-center justify-center bg-gray-900">
-            <div className="bg-gray-800 p-6 rounded-full mb-6">
+          <div className={`flex-1 flex flex-col items-center justify-center ${darkMode ? 'bg-gray-900' : 'bg-white'}`}>
+
+          <div className={`${darkMode ? 'bg-gray-800' : 'bg-gray-200'} p-6 rounded-full mb-6`}>
+
               <Coffee className="w-12 h-12 text-blue-500" />
             </div>
-            <h2 className="text-2xl text-gray-300 font-medium mb-2">Welcome, Doctor</h2>
-            <p className="text-gray-500 text-center max-w-md px-4 mb-6">
+            <h2 className={`text-2xl font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-800'}`}></h2>
+            <p className={`text-center max-w-md px-4 mb-6 ${darkMode ? 'text-gray-500' : 'text-gray-600'}`}>
               Select a patient conversation from the left to start chatting
             </p>
             <button className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">

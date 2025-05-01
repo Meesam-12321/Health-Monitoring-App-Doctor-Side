@@ -29,11 +29,12 @@ const Dashboard = () => {
 
   // Updated statistics with more realistic figures
   const stats = [
-    { title: "Total Patients", value: 4, icon: <FaUserFriends />, color: darkMode ? "from-blue-400 to-blue-600" : "from-blue-500 to-blue-700" },
-    { title: "Appointments Today", value: 10, icon: <FaCalendarAlt />, color: darkMode ? "from-emerald-400 to-emerald-600" : "from-green-500 to-green-700" },
-    { title: "Pending Alerts", value: 10, icon: <FaBell />, color: darkMode ? "from-amber-400 to-amber-600" : "from-yellow-500 to-yellow-700" },
-    { title: "Prescriptions Issued", value: 2, icon: <FaFileMedical />, color: darkMode ? "from-violet-400 to-violet-600" : "from-purple-500 to-purple-700" },
+    { title: "Total Patients", value: 4, icon: <FaUserFriends />, color: darkMode ? "from-blue-400 to-blue-600" : "from-blue-400 to-blue-600" },
+    { title: "Appointments Today", value: 10, icon: <FaCalendarAlt />, color: darkMode ? "from-blue-400 to-blue-600" : "from-blue-400 to-blue-600" },
+    { title: "Pending Alerts", value: 10, icon: <FaBell />, color: darkMode ? "from-blue-400 to-blue-600" : "from-blue-400 to-blue-600" },
+    { title: "Prescriptions Issued", value: 2, icon: <FaFileMedical />, color: darkMode ? "from-blue-400 to-blue-600" : "from-blue-400 to-blue-600" },
   ];
+  
 
   // Updated patients without wearable references
   const patients = [
@@ -86,8 +87,9 @@ const Dashboard = () => {
     <div className={`transition-all duration-300 ${
       darkMode 
         ? 'bg-gradient-to-br from-gray-900 to-indigo-950 text-gray-100' 
-        : 'bg-gradient-to-br from-blue-50 to-indigo-100 text-gray-900'
+        : 'bg-gradient-to-br from-blue-100 to-blue-300 text-gray-900'
     }`}>
+  
       {/* Reduced navbar spacer height */}
       <div className="h-24"></div>
       
@@ -143,8 +145,8 @@ const Dashboard = () => {
               onClick={handlePrescriptionNavigation}
               className={`px-6 py-3 rounded-lg transition-all duration-300 shadow-md flex items-center gap-2 ${
                 darkMode 
-                  ? 'bg-gradient-to-r from-violet-500 to-violet-700 hover:from-violet-600 hover:to-violet-800 text-white' 
-                  : 'bg-gradient-to-r from-purple-400 to-purple-600 hover:from-purple-500 hover:to-purple-700 text-white'
+                  ? 'bg-gradient-to-r from-sky-500 to-sky-700 hover:from-sky-600 hover:to-sky-800 text-white' 
+                  : 'bg-gradient-to-r from-blue-400 to-blue-600 hover:from-blue-500 hover:to-blue-700 text-white'
               }`}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
@@ -152,11 +154,12 @@ const Dashboard = () => {
               <FaFileMedical className="text-lg" />
               <span>Prescription</span>
             </motion.button>
+
             <motion.button
               className={`px-6 py-3 rounded-lg transition-all duration-300 shadow-md flex items-center gap-2 ${
                 darkMode 
-                  ? 'bg-gradient-to-r from-indigo-500 to-indigo-700 hover:from-indigo-600 hover:to-indigo-800 text-white' 
-                  : 'bg-gradient-to-r from-purple-400 to-purple-600 hover:from-purple-500 hover:to-purple-700 text-white'
+                  ? 'bg-gradient-to-r from-blue-700 to-blue-900 hover:from-blue-800 hover:to-blue-950 text-white' 
+                  : 'bg-gradient-to-r from-blue-400 to-blue-600 hover:from-blue-600 hover:to-indigo-700 text-white'
               }`}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
@@ -164,6 +167,8 @@ const Dashboard = () => {
               <FaClipboardList className="text-lg" />
               <span>Reports</span>
             </motion.button>
+
+
           </div>
         </div>
 

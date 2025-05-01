@@ -151,24 +151,6 @@ const Sidebar = () => {
         </motion.ul>
       </nav>
 
-      {/* Status Card */}
-      <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.5 }}
-        className={`mx-4 mb-4 p-4 rounded-lg ${
-          darkMode 
-            ? "bg-gradient-to-r from-gray-800 to-gray-700 text-white" 
-            : "bg-gradient-to-r from-gray-100 to-white text-gray-800"
-        } shadow-lg`}
-      >
-        <div className="flex items-center space-x-3">
-          <div className={`w-3 h-3 rounded-full bg-green-500 animate-pulse`}></div>
-          <p className="text-sm font-medium">System Status: Online</p>
-        </div>
-        <div className="mt-2 text-xs font-medium opacity-75">Last updated: Today, 3:45 PM</div>
-      </motion.div>
-
       {/* Custom Scrollbar Styles */}
       <style>
         {`

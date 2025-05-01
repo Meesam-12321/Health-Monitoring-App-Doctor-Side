@@ -8,12 +8,12 @@ const Navbar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <nav className={`${darkMode ? "bg-gray-900" : "bg-black"} border-b ${darkMode ? "border-gray-700" : "border-gray-800"} fixed top-0 left-0 w-full z-50 transition duration-300`}>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <nav className={`${darkMode ? "bg-black" : "bg-blue-200"} border-b ${darkMode ? "border-gray-800" : "border-blue-200"} fixed top-0 left-0 w-full z-50 transition duration-300`}>
+      <div className="max-w-7xl mx-auto px-0 sm:px-0 lg:px-0">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <motion.div 
-            className="flex items-center"
+            className="flex items-center pl-1"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5 }}
@@ -40,7 +40,7 @@ const Navbar = () => {
                   `px-4 py-2 rounded-md text-sm font-medium transition-all duration-300 
                   ${isActive
                     ? "bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-md"
-                    : `text-gray-300 hover:bg-gray-800 hover:text-white ${darkMode ? "hover:bg-gray-700" : "hover:bg-gray-800"}`
+                    : `${darkMode ? "text-gray-300 hover:text-white hover:bg-gray-800" : "text-blue-700 hover:text-blue-900 hover:bg-blue-200"}`
                   }`
                 }
               >
@@ -84,14 +84,14 @@ const Navbar = () => {
               {/* Background */}
               <div
                 className={`w-12 h-6 rounded-full transition-colors duration-300 
-                ${darkMode ? "bg-gradient-to-r from-blue-400 to-purple-500" : "bg-gradient-to-r from-gray-600 to-gray-500"}`}
+                ${darkMode ? "bg-gradient-to-r from-blue-400 to-purple-500" : "bg-gradient-to-r from-blue-300 to-blue-400"}`}
               ></div>
               {/* Slider */}
               <div
                 className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full shadow-lg transition-transform duration-300 
                 ${darkMode
                   ? "translate-x-6 bg-white"
-                  : "translate-x-0 bg-gray-800"}`}
+                  : "translate-x-0 bg-blue-600"}`}
               >
                 {darkMode ? (
                   // Moon Icon
@@ -133,9 +133,9 @@ const Navbar = () => {
                     className="h-8 w-8 rounded-full"
                   />
                 </div>
-                <span className="text-gray-300 group-hover:text-white text-sm font-medium transition-colors duration-300">
+                <span className={`${darkMode ? "text-gray-300 group-hover:text-white" : "text-blue-800 group-hover:text-blue-900"} text-sm font-medium transition-colors duration-300`}>
                   Dr. Meesam
-                  <span className="block text-xs text-gray-400 group-hover:text-gray-300">Online</span>
+                  <span className={`block text-xs ${darkMode ? "text-gray-400 group-hover:text-gray-300" : "text-blue-600 group-hover:text-blue-700"}`}>Online</span>
                 </span>
               </NavLink>
             </motion.div>
@@ -144,7 +144,7 @@ const Navbar = () => {
             <div className="md:hidden">
               <button
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none"
+                className={`inline-flex items-center justify-center p-2 rounded-md ${darkMode ? "text-gray-400 hover:text-white hover:bg-gray-700" : "text-blue-600 hover:text-blue-800 hover:bg-blue-200"} focus:outline-none`}
               >
                 <svg
                   className={`${mobileMenuOpen ? 'hidden' : 'block'} h-6 w-6`}
@@ -179,7 +179,7 @@ const Navbar = () => {
             exit={{ opacity: 0, height: 0 }}
             className="md:hidden"
           >
-            <div className={`px-2 pt-2 pb-3 space-y-1 sm:px-3 ${darkMode ? "bg-gray-900" : "bg-black"}`}>
+            <div className={`px-2 pt-2 pb-3 space-y-1 sm:px-3 ${darkMode ? "bg-black" : "bg-blue-50"}`}>
               {["dashboard", "appointments", "patients"].map((path) => (
                 <NavLink
                   key={path}
@@ -189,7 +189,7 @@ const Navbar = () => {
                     `block px-3 py-2 rounded-md text-base font-medium ${
                       isActive
                         ? "bg-gradient-to-r from-blue-500 to-purple-600 text-white"
-                        : "text-gray-300 hover:bg-gray-700 hover:text-white"
+                        : `${darkMode ? "text-gray-300 hover:bg-gray-700 hover:text-white" : "text-blue-700 hover:bg-blue-200 hover:text-blue-900"}`
                     }`
                   }
                 >

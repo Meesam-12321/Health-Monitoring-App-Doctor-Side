@@ -395,13 +395,13 @@ const VitalIndicator = ({ title, value, unit, normal, warning, critical, showRan
 // Blood Pressure Component
 const BloodPressure = ({ systolic, diastolic, trend }) => {
   const getSystolicColor = () => {
-    if (systolic < 120) return "text-green-500";
+    if (systolic < 120) return "text-blue-500";
     if (systolic < 140) return "text-yellow-500";
     return "text-red-500";
   };
   
   const getDiastolicColor = () => {
-    if (diastolic < 80) return "text-green-500";
+    if (diastolic < 80) return "text-blue-500";
     if (diastolic < 90) return "text-yellow-500";
     return "text-red-500";
   };
@@ -746,17 +746,6 @@ export default function DoctorDashboard() {
             diastolic={currentPatient.bloodPressure.diastolic}
             trend={currentPatient.bloodPressure.trend}
           />
-        </div>
-        
-        {/* Patient Care Details Section */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-          <PatientNotes notes={currentPatient.notes} />
-          <Medications medications={currentPatient.medications} />
-        </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-          <RecentTests tests={currentPatient.recentTests} />
-          <UpcomingAppointments appointments={currentPatient.upcomingAppointments} />
         </div>
         
         {/* Quick Actions Section */}
