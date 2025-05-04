@@ -1,6 +1,29 @@
-import React, { useState, useEffect } from 'react';
-import { Bell, Calendar, ChevronDown, AlertCircle, User, Settings, Heart, Activity, LineChart, Clipboard, MessageSquare, FilePlus, Clock, TrendingUp, TrendingDown, Pill, FileText } from 'lucide-react';
+// import React, { useState, useEffect } from 'react';
+// import { Bell, Calendar, ChevronDown, AlertCircle, User, Settings, Heart, Activity, LineChart, Clipboard, MessageSquare, FilePlus, Clock, TrendingUp, TrendingDown, Pill, FileText } from 'lucide-react';
 
+import React, { useState, useEffect } from 'react';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { Bell, Calendar, ChevronDown, AlertCircle, User, Settings, Heart, Activity, LineChart as LineChartIcon, Clipboard, MessageSquare, FilePlus, Clock, TrendingUp, TrendingDown, Pill, FileText, X } from 'lucide-react';
+
+// Utility function to generate mock historical data
+const generateMockHistoricalData = (currentValue, min, max, hours = 24) => {
+  const data = [];
+  let value = currentValue;
+  
+  // Generate data points for the last 24 hours (one per hour)
+  for (let i = hours; i >= 0; i--) {
+    // Create some natural-looking fluctuations
+    const fluctuation = Math.random() * 4 - 2; // Random value between -2 and 2
+    value = Math.max(min, Math.min(max, value + fluctuation));
+    
+    data.push({
+      time: `${i}h ago`,
+      value: Math.round(value * 10) / 10,
+    });
+  }
+  
+  return data;
+};
 // Simulated patient data
 const patients = [
   {
@@ -77,8 +100,17 @@ const TrendIndicator = ({ trend }) => {
   return null;
 };
 
-// Health Score Component
+// Enhanced Health Score Component with animation and interactivity
 const HealthScore = ({ score }) => {
+  const [showDetails, setShowDetails] = useState(false);
+  const [historicalData, setHistoricalData] = useState([]);
+  
+  useEffect(() => {
+    const data = generateMockHistoricalData(score, 0, 100, 30);
+    setHistoricalData(data);
+  }, [score]);
+
+
   const getColor = () => {
     if (score >= 80) return "text-green-500";
     if (score >= 60) return "text-yellow-500";
@@ -121,20 +153,29 @@ const HealthScore = ({ score }) => {
               stroke="#e5e7eb" 
               strokeWidth="8"
             />
-            {/* Score indicator */}
+            {/* Score indicator with animation */}
             <circle 
               cx="50" cy="50" r="45" 
               fill="none" 
               stroke="currentColor" 
               strokeWidth="8"
-              className={getColor()}
+              className={`${getColor()} transition-all duration-1000`}
               strokeDasharray={strokeDasharray}
               strokeDashoffset={strokeDashoffset}
               strokeLinecap="round"
-            />
+            >
+              <animate 
+                attributeName="stroke-dashoffset"
+                from={circumference}
+                to={strokeDashoffset}
+                dur="1s"
+                begin="0s"
+                fill="freeze"
+              />
+            </circle>
           </svg>
           <div className="flex flex-col items-center">
-            <span className={`text-3xl font-bold ${getColor()}`}>{score}</span>
+            <span className={`text-3xl font-bold ${getColor()} transition-all duration-500`}>{score}</span>
             <span className={`text-sm font-medium ${getColor()}`}>{getMessage()}</span>
           </div>
         </div>
@@ -157,8 +198,12 @@ const HealthScore = ({ score }) => {
           </div>
           
           <div className="mt-4 flex justify-between">
-            <button className="text-blue-600 hover:text-blue-800 text-sm font-medium flex items-center">
-              <LineChart size={16} className="mr-1" /> View History
+            <button 
+              className="text-blue-600 hover:text-blue-800 text-sm font-medium flex items-center"
+              onClick={() => setShowDetails(!showDetails)}
+            >
+              <LineChartIcon size={16} className="mr-1" /> 
+              {showDetails ? 'Hide History' : 'View History'}
             </button>
             <button className="text-blue-600 hover:text-blue-800 text-sm font-medium flex items-center">
               <FileText size={16} className="mr-1" /> Full Report
@@ -166,10 +211,84 @@ const HealthScore = ({ score }) => {
           </div>
         </div>
       </div>
+      
+      {/* Historical health score chart */}
+      {showDetails && (
+        <div className="mt-4 pt-4 border-t">
+          <div className="flex justify-between items-center mb-2">
+            <h4 className="text-sm font-medium text-gray-700">30-Day Health Score History</h4>
+            <button 
+              className="text-gray-500 hover:text-gray-700" 
+              onClick={() => setShowDetails(false)}
+            >
+              <X size={16} />
+            </button>
+          </div>
+          <div className="h-64">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={historicalData} margin={{ top: 5, right: 5, left: 5, bottom: 5 }}>
+                <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
+                <XAxis 
+                  dataKey="day" 
+                  tick={{ fontSize: 10 }}
+                  interval="preserveStartEnd"
+                />
+                <YAxis 
+                  domain={[0, 100]}
+                  ticks={[0, 20, 40, 60, 80, 100]}
+                  tick={{ fontSize: 10 }}
+                />
+                <Tooltip 
+                  formatter={(value) => [`${value}/100`, 'Health Score']}
+                  labelFormatter={(label) => `${label}`}
+                />
+                
+                {/* Zone indicators */}
+                <rect x="0%" y={80} width="100%" height={20} fill="#d1fae5" fillOpacity={0.3} />
+                <rect x="0%" y={60} width="100%" height={20} fill="#fef3c7" fillOpacity={0.3} />
+                <rect x="0%" y={0} width="100%" height={60} fill="#fee2e2" fillOpacity={0.3} />
+                
+                <Line 
+                  type="monotone" 
+                  dataKey="score" 
+                  stroke={
+                    score >= 80 ? "#10b981" : 
+                    score >= 60 ? "#f59e0b" : "#ef4444"
+                  }
+                  strokeWidth={2}
+                  dot={{ 
+                    r: 3, 
+                    fill: (entry) => {
+                      const val = entry.score;
+                      return val >= 80 ? "#10b981" : val >= 60 ? "#f59e0b" : "#ef4444";
+                    }
+                  }}
+                  activeDot={{ r: 5, stroke: '#FFF', strokeWidth: 2 }}
+                  isAnimationActive={true}
+                  animationDuration={1500}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+          <div className="flex justify-between mt-2 text-xs">
+            <div className="flex items-center">
+              <div className="w-3 h-3 rounded-full bg-green-500 mr-1"></div>
+              <span>Excellent (80-100)</span>
+            </div>
+            <div className="flex items-center">
+              <div className="w-3 h-3 rounded-full bg-yellow-500 mr-1"></div>
+              <span>Warning (60-79)</span>
+            </div>
+            <div className="flex items-center">
+              <div className="w-3 h-3 rounded-full bg-red-500 mr-1"></div>
+              <span>Critical (0-59)</span>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
-
 // Anomaly Detection Component
 const AnomalyDetection = ({ status, lastAnomaly, confidence }) => {
   const isAtRisk = status === "At Risk";
@@ -269,7 +388,25 @@ const AnomalyDetection = ({ status, lastAnomaly, confidence }) => {
 };
 
 // Component for circular vitals indicator
+// Enhanced VitalIndicator Component with interactivity
 const VitalIndicator = ({ title, value, unit, normal, warning, critical, showRange = true, trend, min, max }) => {
+  const [showHistory, setShowHistory] = useState(false);
+  const [historicalData, setHistoricalData] = useState([]);
+  const [isAnimating, setIsAnimating] = useState(false);
+  
+  useEffect(() => {
+    // Generate history data when component mounts
+    setHistoricalData(generateMockHistoricalData(value.current, min || normal.min - 10, max || critical.max + 10));
+    
+    // Set up pulse animation that repeats
+    const interval = setInterval(() => {
+      setIsAnimating(true);
+      setTimeout(() => setIsAnimating(false), 1000);
+    }, 5000);
+    
+    return () => clearInterval(interval);
+  }, []);
+  
   const getColor = () => {
     if (value.current <= normal.max && value.current >= normal.min) return "text-green-500";
     if (value.current <= warning.max && value.current >= warning.min) return "text-yellow-500";
@@ -296,7 +433,7 @@ const VitalIndicator = ({ title, value, unit, normal, warning, critical, showRan
     <div className="flex flex-col p-4 bg-white rounded-lg shadow-md">
       <h3 className="text-gray-700 font-semibold mb-3">{title}</h3>
       <div className="flex items-center">
-        <div className="relative w-28 h-28 flex-shrink-0">
+        <div className={`relative w-28 h-28 flex-shrink-0 ${isAnimating ? 'animate-pulse' : ''}`}>
           {/* Background circle */}
           <svg className="w-full h-full -rotate-90 absolute" viewBox="0 0 100 100">
             <circle 
@@ -332,20 +469,20 @@ const VitalIndicator = ({ title, value, unit, normal, warning, critical, showRan
               strokeDasharray={`${(critical.max - critical.min) / (maxValue - minValue) * circumference} ${circumference}`}
               strokeDashoffset={circumference - ((critical.min - minValue) / (maxValue - minValue)) * circumference}
             />
-            {/* Value indicator */}
+            {/* Value indicator with animation */}
             <circle 
               cx="50" cy="50" r="45" 
               fill="none" 
               stroke="currentColor" 
               strokeWidth="8"
-              className={getColor()}
+              className={`${getColor()} transition-all duration-1000`}
               strokeDasharray={strokeDasharray}
               strokeDashoffset={strokeDashoffset}
               strokeLinecap="round"
             />
           </svg>
           <div className="absolute inset-0 flex flex-col items-center justify-center">
-            <span className={`text-2xl font-bold ${getColor()}`}>{value.current}</span>
+            <span className={`text-2xl font-bold ${getColor()} transition-all duration-500`}>{value.current}</span>
             <span className="text-xs text-gray-500">{unit}</span>
           </div>
         </div>
@@ -382,18 +519,108 @@ const VitalIndicator = ({ title, value, unit, normal, warning, critical, showRan
           
           <div className="text-xs text-gray-500 flex justify-between">
             <span>Normal Range: {normal.min}-{normal.max} {unit}</span>
-            <button className="text-blue-600 hover:text-blue-800 text-xs flex items-center">
-              <LineChart size={12} className="mr-1" /> History
+            <button 
+              className="text-blue-600 hover:text-blue-800 text-xs flex items-center"
+              onClick={() => setShowHistory(!showHistory)}
+            >
+              <LineChartIcon size={12} className="mr-1" /> 
+              {showHistory ? 'Hide History' : 'Show History'}
             </button>
           </div>
         </div>
       </div>
+      
+      {/* Historical data chart (conditionally rendered) */}
+      {showHistory && (
+        <div className="mt-4 border-t pt-4">
+          <div className="flex justify-between items-center mb-2">
+            <h4 className="text-sm font-medium text-gray-700">24-Hour History</h4>
+            <button 
+              className="text-gray-500 hover:text-gray-700" 
+              onClick={() => setShowHistory(false)}
+            >
+              <X size={16} />
+            </button>
+          </div>
+          <div className="h-64">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={historicalData} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
+                <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
+                <XAxis dataKey="time" tick={{ fontSize: 10 }} />
+                <YAxis 
+                  domain={[
+                    Math.floor(Math.min(...historicalData.map(d => d.value)) - 2), 
+                    Math.ceil(Math.max(...historicalData.map(d => d.value)) + 2)
+                  ]}
+                  tick={{ fontSize: 10 }}
+                />
+                <Tooltip 
+                  formatter={(value) => [`${value} ${unit}`, 'Value']}
+                  labelFormatter={(label) => `Time: ${label}`}
+                />
+                
+                {/* Add reference lines for normal/warning ranges */}
+                <line 
+                  x1="0%" y1={normal.min} x2="100%" y2={normal.min} 
+                  stroke="#10b981" strokeWidth={1} strokeDasharray="5 5" 
+                />
+                <line 
+                  x1="0%" y1={normal.max} x2="100%" y2={normal.max} 
+                  stroke="#10b981" strokeWidth={1} strokeDasharray="5 5" 
+                />
+                
+                <Line 
+                  type="monotone" 
+                  dataKey="value" 
+                  stroke={
+                    value.current <= normal.max && value.current >= normal.min ? "#10b981" : 
+                    value.current <= warning.max && value.current >= warning.min ? "#f59e0b" : "#ef4444"
+                  } 
+                  strokeWidth={2}
+                  dot={{ r: 3 }}
+                  activeDot={{ r: 5, stroke: '#FFF', strokeWidth: 2 }}
+                  isAnimationActive={true}
+                  animationDuration={1000}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
 
 // Blood Pressure Component
+// Enhanced Blood Pressure Component with interactivity
 const BloodPressure = ({ systolic, diastolic, trend }) => {
+  const [showHistory, setShowHistory] = useState(false);
+  const [historicalData, setHistoricalData] = useState([]);
+  const [isAnimating, setIsAnimating] = useState(false);
+  
+  useEffect(() => {
+    // Generate two sets of historical data for systolic and diastolic
+    const systolicHistory = generateMockHistoricalData(systolic, 100, 160);
+    const diastolicHistory = generateMockHistoricalData(diastolic, 60, 100);
+    
+    // Combine them into a single dataset
+    const combined = systolicHistory.map((item, index) => ({
+      time: item.time,
+      systolic: item.value,
+      diastolic: diastolicHistory[index].value
+    }));
+    
+    setHistoricalData(combined);
+    
+    // Set up pulse animation that repeats
+    const interval = setInterval(() => {
+      setIsAnimating(true);
+      setTimeout(() => setIsAnimating(false), 1000);
+    }, 5000);
+    
+    return () => clearInterval(interval);
+  }, []);
+  
   const getSystolicColor = () => {
     if (systolic < 120) return "text-blue-500";
     if (systolic < 140) return "text-yellow-500";
@@ -422,16 +649,16 @@ const BloodPressure = ({ systolic, diastolic, trend }) => {
     <div className="flex flex-col p-4 bg-white rounded-lg shadow-md">
       <h3 className="text-gray-700 font-semibold mb-3">Blood Pressure</h3>
       <div className="flex">
-        <div className="bg-blue-50 rounded-lg p-3 flex items-center justify-center flex-shrink-0 w-28 h-28">
+        <div className={`bg-blue-50 rounded-lg p-3 flex items-center justify-center flex-shrink-0 w-28 h-28 ${isAnimating ? 'animate-pulse' : ''}`}>
           <div className="flex items-center">
             <div className="flex flex-col items-center">
               <span className="text-sm text-gray-500">Systolic</span>
-              <span className={`text-2xl font-bold ${getSystolicColor()}`}>{systolic}</span>
+              <span className={`text-2xl font-bold ${getSystolicColor()} transition-all duration-500`}>{systolic}</span>
             </div>
             <div className="text-xl font-bold text-gray-400 mx-1">/</div>
             <div className="flex flex-col items-center">
               <span className="text-sm text-gray-500">Diastolic</span>
-              <span className={`text-2xl font-bold ${getDiastolicColor()}`}>{diastolic}</span>
+              <span className={`text-2xl font-bold ${getDiastolicColor()} transition-all duration-500`}>{diastolic}</span>
             </div>
           </div>
         </div>
@@ -467,15 +694,93 @@ const BloodPressure = ({ systolic, diastolic, trend }) => {
           
           <div className="flex justify-between text-xs mt-1">
             <span className="text-gray-500">Last reading: 35 min ago</span>
-            <button className="text-blue-600 hover:text-blue-800 text-xs flex items-center">
-              <LineChart size={12} className="mr-1" /> History
+            <button 
+              className="text-blue-600 hover:text-blue-800 text-xs flex items-center"
+              onClick={() => setShowHistory(!showHistory)}
+            >
+              <LineChartIcon size={12} className="mr-1" /> 
+              {showHistory ? 'Hide History' : 'Show History'}
             </button>
           </div>
         </div>
       </div>
+      
+      {/* Historical data chart (conditionally rendered) */}
+      {showHistory && (
+        <div className="mt-4 border-t pt-4">
+          <div className="flex justify-between items-center mb-2">
+            <h4 className="text-sm font-medium text-gray-700">24-Hour Blood Pressure History</h4>
+            <button 
+              className="text-gray-500 hover:text-gray-700" 
+              onClick={() => setShowHistory(false)}
+            >
+              <X size={16} />
+            </button>
+          </div>
+          <div className="h-64">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={historicalData} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
+                <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
+                <XAxis dataKey="time" tick={{ fontSize: 10 }} />
+                <YAxis 
+                  domain={[
+                    Math.min(60, Math.min(...historicalData.map(d => d.diastolic)) - 5), 
+                    Math.max(160, Math.max(...historicalData.map(d => d.systolic)) + 5)
+                  ]}
+                  tick={{ fontSize: 10 }}
+                />
+                <Tooltip 
+                  formatter={(value, name) => [`${value} mmHg`, name.charAt(0).toUpperCase() + name.slice(1)]}
+                  labelFormatter={(label) => `Time: ${label}`}
+                />
+                
+                {/* Reference lines for BP ranges */}
+                <line x1="0%" y1={120} x2="100%" y2={120} stroke="#f59e0b" strokeWidth={1} strokeDasharray="5 5" />
+                <line x1="0%" y1={140} x2="100%" y2={140} stroke="#ef4444" strokeWidth={1} strokeDasharray="5 5" />
+                <line x1="0%" y1={80} x2="100%" y2={80} stroke="#f59e0b" strokeWidth={1} strokeDasharray="5 5" />
+                <line x1="0%" y1={90} x2="100%" y2={90} stroke="#ef4444" strokeWidth={1} strokeDasharray="5 5" />
+                
+                <Line 
+                  type="monotone" 
+                  dataKey="systolic" 
+                  stroke="#2563eb" 
+                  strokeWidth={2}
+                  dot={{ r: 3 }}
+                  activeDot={{ r: 5, stroke: '#FFF', strokeWidth: 2 }}
+                  isAnimationActive={true}
+                  animationDuration={1000}
+                  name="Systolic"
+                />
+                <Line 
+                  type="monotone" 
+                  dataKey="diastolic" 
+                  stroke="#7c3aed" 
+                  strokeWidth={2}
+                  dot={{ r: 3 }}
+                  activeDot={{ r: 5, stroke: '#FFF', strokeWidth: 2 }}
+                  isAnimationActive={true}
+                  animationDuration={1000}
+                  name="Diastolic"
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+          <div className="flex justify-between mt-2 text-xs">
+            <div className="flex items-center">
+              <div className="w-3 h-3 rounded-full bg-blue-600 mr-1"></div>
+              <span>Systolic</span>
+            </div>
+            <div className="flex items-center">
+              <div className="w-3 h-3 rounded-full bg-purple-600 mr-1"></div>
+              <span>Diastolic</span>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
+
 
 // Patient Notes Component
 const PatientNotes = ({ notes }) => {
@@ -615,11 +920,11 @@ export default function DoctorDashboard() {
     <div className="bg-gray-50 min-h-screen">
       {/* Top Navigation Bar */}
       <div className="bg-white shadow-sm px-6 py-4">
-        <div className="max-w-7xl mx-auto flex justify-between items-center">
+        <div className="max-w-7xl pt-8 mx-auto flex justify-between items-center">
           <div className="flex items-center">
-            <div className="h-8 w-8 rounded-md bg-blue-500 flex items-center justify-center text-white font-bold mr-3">MD
+            <div className="h-8 w-8  rounded-md bg-blue-500  pt-2 flex items-center justify-center text-white font-bold mr-3">MD
             </div>
-            <h1 className="text-xl font-semibold text-blue-800">MedDashboard</h1>
+            <h1 className="text-xl pt-8 font-semibold text-blue-800">MedDashboard</h1>
           </div>
           
           <div className="flex items-center space-x-4">

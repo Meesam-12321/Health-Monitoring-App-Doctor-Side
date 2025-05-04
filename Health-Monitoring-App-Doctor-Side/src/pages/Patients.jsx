@@ -14,117 +14,119 @@ const Patients = () => {
     const navigate = useNavigate();
 
     // Fetch all patients from the backend with authToken
-    useEffect(() => {
-        const fetchPatients = async () => {
-            setIsLoading(true);
-            try {
-                const authToken = localStorage.getItem("authToken");
-                if (!authToken) {
-                    throw new Error("Auth token not found");
-                }
+// Replace the useEffect hook in your Patients component with this fixed version:
 
-                const response = await axios.get("http://localhost:3000/api/patients", {
-                    headers: {
-                        Authorization: `Bearer ${authToken}`,
-                    },
-                });
-                console.log("Patients:", response.data);
-                setPatients(response.data);
-                setFilteredPatients(response.data);
-            } catch (error) {
-                console.error("Error fetching patients:", error.message);
-                // Extended static data with dummy data
-                const staticData = [
-                    {
-                        id: 1,
-                        name: "John Doe",
-                        age: 45,
-                        gender: "Male",
-                        condition: "Diabetes",
-                        doctor: "Dr. Smith"
-                    },
-                    {
-                        id: 2,
-                        name: "Jane Smith",
-                        age: 38,
-                        gender: "Female",
-                        condition: "Hypertension",
-                        doctor: "Dr. Johnson"
-                    },
-                    {
-                        id: 3,
-                        name: "Emily Johnson",
-                        age: 50,
-                        gender: "Female",
-                        condition: "Arthritis",
-                        doctor: "Dr. Williams"
-                    },
-                    {
-                        id: 4,
-                        name: "Michael Brown",
-                        age: 30,
-                        gender: "Male",
-                        condition: "Asthma",
-                        doctor: "Dr. Davis"
-                    },
-                    {
-                        id: 5,
-                        name: "Sarah Wilson",
-                        age: 62,
-                        gender: "Female",
-                        condition: "Osteoporosis",
-                        doctor: "Dr. Anderson"
-                    },
-                    {
-                        id: 6,
-                        name: "Robert Garcia",
-                        age: 55,
-                        gender: "Male",
-                        condition: "Hypertension",
-                        doctor: "Dr. Smith"
-                    },
-                    {
-                        id: 7,
-                        name: "Lisa Martinez",
-                        age: 42,
-                        gender: "Female",
-                        condition: "Diabetes",
-                        doctor: "Dr. Johnson"
-                    },
-                    {
-                        id: 8,
-                        name: "David Taylor",
-                        age: 29,
-                        gender: "Male",
-                        condition: "Anxiety",
-                        doctor: "Dr. Williams"
-                    },
-                    {
-                        id: 9,
-                        name: "Amanda Lewis",
-                        age: 35,
-                        gender: "Female",
-                        condition: "Depression",
-                        doctor: "Dr. Miller"
-                    },
-                    {
-                        id: 10,
-                        name: "Kevin Chen",
-                        age: 41,
-                        gender: "Male",
-                        condition: "High Cholesterol",
-                        doctor: "Dr. Lee"
-                    }
-                ];
-                setPatients(staticData);
-                setFilteredPatients(staticData);
-            } finally {
-                setIsLoading(false);
+useEffect(() => {
+    const fetchPatients = async () => {
+        setIsLoading(true);
+        try {
+            const authToken = localStorage.getItem("authToken");
+            if (!authToken) {
+                throw new Error("Auth token not found");
             }
-        };
 
-        fetchPatients();
-    }, []);
+            const response = await axios.get("http://localhost:3000/api/patients", {
+                headers: {
+                    Authorization: `Bearer ${authToken}`,
+                },
+            });
+            console.log("Patients:", response.data);
+            setPatients(response.data);
+            setFilteredPatients(response.data);
+        } catch (error) {
+            console.error("Error fetching patients:", error.message);
+            // Extended static data with dummy data
+            const staticData = [
+                {
+                    id: 1,
+                    name: "John Doe",
+                    age: 45,
+                    gender: "Male",
+                    condition: "Diabetes",
+                    doctor: "Dr. Smith"
+                },
+                {
+                    id: 2,
+                    name: "Jane Smith",
+                    age: 38,
+                    gender: "Female",
+                    condition: "Hypertension",
+                    doctor: "Dr. Johnson"
+                },
+                {
+                    id: 3,
+                    name: "Emily Johnson",
+                    age: 50,
+                    gender: "Female",
+                    condition: "Arthritis",
+                    doctor: "Dr. Williams"
+                },
+                {
+                    id: 4,
+                    name: "Michael Brown",
+                    age: 30,
+                    gender: "Male",
+                    condition: "Asthma",
+                    doctor: "Dr. Davis"
+                },
+                {
+                    id: 5,
+                    name: "Sarah Wilson",
+                    age: 62,
+                    gender: "Female",
+                    condition: "Osteoporosis",
+                    doctor: "Dr. Anderson"
+                },
+                {
+                    id: 6,
+                    name: "Robert Garcia",
+                    age: 55,
+                    gender: "Male",
+                    condition: "Hypertension",
+                    doctor: "Dr. Smith"
+                },
+                {
+                    id: 7,
+                    name: "Lisa Martinez",
+                    age: 42,
+                    gender: "Female",
+                    condition: "Diabetes",
+                    doctor: "Dr. Johnson"
+                },
+                {
+                    id: 8,
+                    name: "David Taylor",
+                    age: 29,
+                    gender: "Male",
+                    condition: "Anxiety",
+                    doctor: "Dr. Williams"
+                },
+                {
+                    id: 9,
+                    name: "Amanda Lewis",
+                    age: 35,
+                    gender: "Female",
+                    condition: "Depression",
+                    doctor: "Dr. Miller"
+                },
+                {
+                    id: 10,
+                    name: "Kevin Chen",
+                    age: 41,
+                    gender: "Male",
+                    condition: "High Cholesterol",
+                    doctor: "Dr. Lee"
+                }
+            ];
+            setPatients(staticData);
+            setFilteredPatients(staticData);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    fetchPatients();
+}, []);
 
     // Handle search input - improved to maintain original data
     const handleSearchChange = (e) => {
