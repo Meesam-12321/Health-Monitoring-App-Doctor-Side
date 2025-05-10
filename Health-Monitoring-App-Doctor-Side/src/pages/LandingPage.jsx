@@ -342,11 +342,11 @@ useEffect(() => {
               Get Started
             </Link>
             <Link
-              to="/contact"
-              className="px-8 py-4 rounded-lg bg-transparent border-2 border-white text-white hover:bg-white/10 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl font-medium text-lg flex items-center justify-center"
-            >
-              Contact Us
-            </Link>
+            to="/ContactUs"
+            className="px-8 py-4 rounded-lg bg-transparent border-2 border-white text-white hover:bg-white/10 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl font-medium text-lg flex items-center justify-center"
+          >
+            Contact Us
+          </Link>
           </motion.div>
         </div>
       </div>
@@ -366,7 +366,7 @@ useEffect(() => {
               <h3 className={`text-lg font-semibold mb-6 ${darkMode ? "text-white" : "text-gray-900"}`}>Company</h3>
               <ul className="space-y-4">
                 <li><Link to="/about" className={`${darkMode ? "text-gray-400 hover:text-white" : "text-gray-600 hover:text-gray-900"}`}>About Us</Link></li>
-                <li><Link to="/contact" className={`${darkMode ? "text-gray-400 hover:text-white" : "text-gray-600 hover:text-gray-900"}`}>Contact</Link></li>
+                <li><Link to="/ContactUs" className={`${darkMode ? "text-gray-400 hover:text-white" : "text-gray-600 hover:text-gray-900"}`}>Contact</Link></li>
               </ul>
             </div>
             <div>

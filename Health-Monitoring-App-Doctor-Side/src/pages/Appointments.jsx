@@ -3,17 +3,15 @@ import axios from "axios";
 import { DarkModeContext } from "../Context/DarkModeContext";
 import { useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
-import { Calendar, Clock, Search, User, Activity } from "lucide-react";
+import { motion } from "framer-motion"; // Added framer-motion for animations
 
 const Appointments = () => {
   const { darkMode } = useContext(DarkModeContext);
   const [filterDate, setFilterDate] = useState("");
-  const [searchQuery, setSearchQuery] = useState("");
   const [appointments, setAppointments] = useState([]);
   const [patients, setPatients] = useState({});
   const [selectedPatientId, setSelectedPatientId] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [viewMode, setViewMode] = useState("list"); // "list" or "grid"
+  const [loading, setLoading] = useState(true);
 
   const navigate = useNavigate();
 
@@ -33,38 +31,20 @@ const Appointments = () => {
     return token ? { Authorization: `Bearer ${token}` } : {};
   };
 
-  // Hardcoded patient data matching dashboard
+  // Updated patient data with diverse names
   const dashboardPatients = {
-    "patient1": "Aleena Sehar",
-    "patient2": "Meesam Imran",
-    "patient3": "Eman",
-    "patient4": "Mishaal",
-    "patient5": "Sonia Arshad",
-    "patient6": "Mudasser Raza",
-    "patient7": "Javid",
-    "patient8": "Jasmine",
-    "patient9": "Rehan",
-    "patient10": "Madeeha",
-    "patient11": "Maneeha",
-    "patient12": "Musawer"
-  };
-
-  // Generate condition-based badge colors
-  const getConditionColor = (condition) => {
-    const conditionMap = {
-      "Diabetes": "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200",
-      "Hypertension": "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200",
-      "Asthma": "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200",
-      "Heart Disease": "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200",
-      "Migraine": "bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200",
-      "Arthritis": "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200",
-      "Annual Checkup": "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
-      "Allergies": "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200",
-      "Back Pain": "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200",
-      "Headache": "bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200",
-    };
-    
-    return conditionMap[condition] || "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300";
+    "patient1": "Emma Thompson",
+    "patient2": "Michael Chen",
+    "patient3": "Sophia Rodriguez",
+    "patient4": "William Jackson",
+    "patient5": "Olivia Kim",
+    "patient6": "James Patel",
+    "patient7": "Charlotte Lee",
+    "patient8": "Benjamin Wilson",
+    "patient9": "Isabella Johnson",
+    "patient10": "Henry Davis",
+    "patient11": "Amelia Martinez",
+    "patient12": "Alexander Smith"
   };
 
   // Mock appointment data based on dashboard patients
@@ -73,13 +53,27 @@ const Appointments = () => {
     const tomorrow = new Date(today);
     tomorrow.setDate(tomorrow.getDate() + 1);
     
+    const conditions = [
+      {reason: "Diabetes Management", priority: "Medium"},
+      {reason: "Hypertension Follow-up", priority: "High"},
+      {reason: "Asthma Control", priority: "Medium"},
+      {reason: "Cardiac Assessment", priority: "High"},
+      {reason: "Migraine Treatment", priority: "Medium"},
+      {reason: "Arthritis Therapy", priority: "Low"},
+      {reason: "Annual Checkup", priority: "Low"},
+      {reason: "Allergy Consultation", priority: "Medium"},
+      {reason: "Spine Evaluation", priority: "High"},
+      {reason: "Chronic Headache", priority: "Medium"}
+    ];
+    
     const mockAppointments = [
       {
         _id: "appt1",
         patient: "patient1",
         doctor: doctorId,
         appointmentDate: new Date(today.setHours(9, 0, 0)).toISOString(),
-        reason: "Diabetes",
+        reason: conditions[0].reason,
+        priority: conditions[0].priority,
         status: "scheduled"
       },
       {
@@ -87,7 +81,8 @@ const Appointments = () => {
         patient: "patient2",
         doctor: doctorId,
         appointmentDate: new Date(today.setHours(10, 30, 0)).toISOString(),
-        reason: "Hypertension",
+        reason: conditions[1].reason,
+        priority: conditions[1].priority,
         status: "scheduled"
       },
       {
@@ -95,7 +90,8 @@ const Appointments = () => {
         patient: "patient3",
         doctor: doctorId,
         appointmentDate: new Date(today.setHours(11, 15, 0)).toISOString(),
-        reason: "Asthma",
+        reason: conditions[2].reason,
+        priority: conditions[2].priority,
         status: "scheduled"
       },
       {
@@ -103,7 +99,8 @@ const Appointments = () => {
         patient: "patient4",
         doctor: doctorId,
         appointmentDate: new Date(today.setHours(13, 0, 0)).toISOString(),
-        reason: "Heart Disease",
+        reason: conditions[3].reason,
+        priority: conditions[3].priority,
         status: "scheduled"
       },
       {
@@ -111,7 +108,8 @@ const Appointments = () => {
         patient: "patient5",
         doctor: doctorId,
         appointmentDate: new Date(today.setHours(14, 30, 0)).toISOString(),
-        reason: "Migraine",
+        reason: conditions[4].reason,
+        priority: conditions[4].priority,
         status: "scheduled"
       },
       {
@@ -119,7 +117,8 @@ const Appointments = () => {
         patient: "patient6",
         doctor: doctorId,
         appointmentDate: new Date(today.setHours(15, 45, 0)).toISOString(),
-        reason: "Arthritis",
+        reason: conditions[5].reason,
+        priority: conditions[5].priority,
         status: "scheduled"
       },
       {
@@ -127,7 +126,8 @@ const Appointments = () => {
         patient: "patient7",
         doctor: doctorId,
         appointmentDate: new Date(tomorrow.setHours(9, 30, 0)).toISOString(),
-        reason: "Annual Checkup",
+        reason: conditions[6].reason,
+        priority: conditions[6].priority,
         status: "scheduled"
       },
       {
@@ -135,7 +135,8 @@ const Appointments = () => {
         patient: "patient8",
         doctor: doctorId,
         appointmentDate: new Date(tomorrow.setHours(11, 0, 0)).toISOString(),
-        reason: "Allergies",
+        reason: conditions[7].reason,
+        priority: conditions[7].priority,
         status: "scheduled"
       },
       {
@@ -143,7 +144,8 @@ const Appointments = () => {
         patient: "patient9",
         doctor: doctorId,
         appointmentDate: new Date(tomorrow.setHours(13, 30, 0)).toISOString(),
-        reason: "Back Pain",
+        reason: conditions[8].reason,
+        priority: conditions[8].priority,
         status: "scheduled"
       },
       {
@@ -151,7 +153,8 @@ const Appointments = () => {
         patient: "patient10",
         doctor: doctorId,
         appointmentDate: new Date(tomorrow.setHours(14, 45, 0)).toISOString(),
-        reason: "Headache",
+        reason: conditions[9].reason,
+        priority: conditions[9].priority,
         status: "scheduled"
       }
     ];
@@ -162,15 +165,15 @@ const Appointments = () => {
   // Fetch appointments and patient data from backend
   useEffect(() => {
     const fetchAppointments = async () => {
-      setIsLoading(true);
       try {
+        setLoading(true);
         const doctorId = getDoctorIdFromToken();
         console.log("Doctor ID from Token:", doctorId);
 
         if (!doctorId) {
           console.log("No doctor ID found in token.");
           setAppointments([]);
-          setIsLoading(false);
+          setLoading(false);
           return;
         }
 
@@ -227,10 +230,10 @@ const Appointments = () => {
         });
         
         setPatients(patientMap);
+        setLoading(false);
       } catch (error) {
         console.error("Error setting up appointments:", error.message);
-      } finally {
-        setIsLoading(false);
+        setLoading(false);
       }
     };
 
@@ -274,375 +277,305 @@ const Appointments = () => {
     setFilterDate(selectedDate);
   };
 
-  // Handle search filtering
-  const handleSearchChange = (e) => {
-    setSearchQuery(e.target.value);
-  };
-
-  // Toggle view mode between list and grid
-  const toggleViewMode = () => {
-    setViewMode(viewMode === "list" ? "grid" : "list");
-  };
-
   // Get filtered appointments
   const getFilteredAppointments = () => {
-    let filtered = appointments;
-    
-    // Filter by date if set
-    if (filterDate) {
-      filtered = filtered.filter(
-        (appointment) =>
-          new Date(appointment.appointmentDate).toLocaleDateString("en-CA") === filterDate
-      );
+    if (!filterDate) {
+      return appointments;
     }
-    
-    // Filter by search query if set
-    if (searchQuery) {
-      const query = searchQuery.toLowerCase();
-      filtered = filtered.filter(
-        (appointment) => {
-          const patientName = patients[appointment.patient] || "";
-          const reason = appointment.reason || "";
-          return (
-            patientName.toLowerCase().includes(query) ||
-            reason.toLowerCase().includes(query)
-          );
-        }
-      );
-    }
-    
-    return filtered;
+
+    return appointments.filter(
+      (appointment) =>
+        new Date(appointment.appointmentDate).toLocaleDateString("en-CA") === filterDate
+    );
   };
 
   // Handle row click
-  const handleAppointmentClick = (id) => {
+  const handleRowClick = (id) => {
     setSelectedPatientId(id);
     navigate(`/appointments/${id}`);
   };
 
+  // Get priority badge class
+  const getPriorityBadgeClass = (priority) => {
+    switch (priority) {
+      case "High":
+        return darkMode 
+          ? "bg-red-900 text-red-200" 
+          : "bg-red-100 text-red-800 border border-red-200";
+      case "Medium":
+        return darkMode 
+          ? "bg-yellow-900 text-yellow-200" 
+          : "bg-yellow-100 text-yellow-800 border border-yellow-200";
+      case "Low":
+        return darkMode 
+          ? "bg-green-900 text-green-200" 
+          : "bg-green-100 text-green-800 border border-green-200";
+      default:
+        return darkMode 
+          ? "bg-blue-900 text-blue-200" 
+          : "bg-blue-100 text-blue-800 border border-blue-200";
+    }
+  };
+
   const filteredAppointments = getFilteredAppointments();
-  // Function to get initials from patient name
-  const getInitials = (name) => {
-    if (!name) return "??";
-    return name
-      .split(" ")
-      .map((n) => n[0])
-      .join("")
-      .toUpperCase();
+
+  // Animation variants for components
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: { 
+      opacity: 1,
+      transition: { 
+        staggerChildren: 0.1 
+      } 
+    }
   };
 
-  // Function to get random pastel color for avatar backgrounds
-  const getAvatarColor = (patientId) => {
-    const colors = [
-      "bg-blue-200 text-blue-800",
-      "bg-green-200 text-green-800",
-      "bg-yellow-200 text-yellow-800",
-      "bg-red-200 text-red-800",
-      "bg-purple-200 text-purple-800",
-      "bg-pink-200 text-pink-800",
-      "bg-indigo-200 text-indigo-800",
-      "bg-teal-200 text-teal-800",
-    ];
-    
-    // Use patient ID to determine color (consistent per patient)
-    const colorIndex = patientId.charCodeAt(patientId.length - 1) % colors.length;
-    return colors[colorIndex];
-  };
-
-  // Format appointment time to be more readable
-  const formatAppointmentTime = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleTimeString("en-US", { 
-      hour: "numeric", 
-      minute: "2-digit",
-      hour12: true 
-    });
-  };
-
-  // Format date to be more readable
-  const formatAppointmentDate = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", { 
-      weekday: "long",
-      month: "short",
-      day: "numeric"
-    });
+  const itemVariants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: { 
+      y: 0, 
+      opacity: 1,
+      transition: { 
+        type: "spring", 
+        stiffness: 100 
+      }
+    }
   };
 
   return (
-    <div className={`min-h-screen transition-all duration-300 ${
-      darkMode
-        ? "bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white"
-        : "bg-gradient-to-br from-blue-50 via-white to-indigo-50 text-gray-900"
-    }`}>
-      {/* Header with animated gradient */}
-      <div className={`relative overflow-hidden ${
-        darkMode 
-          ? "bg-gradient-to-r from-indigo-900 via-purple-900 to-indigo-900" 
-          : "bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500"
-      }`}>
-        <div className="absolute inset-0 bg-grid-white/[0.05] bg-grid-white/[0.05]"></div>
-        <div className="max-w-6xl mx-auto px-6 py-12 relative z-10">
-          <h1 className="text-4xl md:text-5xl font-bold text-white mb-4 flex items-center">
-            <Calendar className="mr-3 h-8 w-8" />
-            Appointments Dashboard
-          </h1>
-          <p className="text-lg md:text-xl text-white/80 max-w-3xl">
-            Manage your scheduled patient appointments and access detailed information.
+    <div
+      className={`p-6 min-h-screen pt-20 ${
+        darkMode
+          ? "bg-gradient-to-r from-gray-900 to-gray-800 text-white"
+          : "bg-gradient-to-r from-blue-50 to-blue-100 text-gray-900"
+      }`}
+    >
+      {/* Header */}
+      <motion.div 
+        className="flex items-center justify-center mb-10"
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        <h1 className="text-4xl font-bold text-center">
+          <span className="bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
+            Appointments
+          </span>
+        </h1>
+      </motion.div>
+
+      {/* Filter and Summary Section */}
+      <motion.div
+        className="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-8"
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+      >
+        {/* Date Filter Card */}
+        <motion.div
+          variants={itemVariants}
+          className={`p-6 rounded-xl shadow-lg ${
+            darkMode 
+              ? "bg-gray-800 border border-gray-700" 
+              : "bg-white border border-blue-100"
+          }`}
+        >
+          <h2 className={`text-lg font-semibold mb-4 ${
+            darkMode ? "text-blue-300" : "text-blue-600"
+          }`}>
+            <span className="flex items-center">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
+              </svg>
+              Filter by Date
+            </span>
+          </h2>
+          <input
+            type="date"
+            id="filterDate"
+            value={filterDate}
+            onChange={handleFilterChange}
+            className={`p-3 w-full rounded-lg ${
+              darkMode
+                ? "bg-gray-700 text-white border border-gray-600 focus:ring-blue-500 focus:border-blue-500"
+                : "bg-white text-gray-900 border border-blue-200 focus:ring-blue-500 focus:border-blue-500"
+            }`}
+          />
+        </motion.div>
+
+        {/* Summary Cards */}
+        <motion.div
+          variants={itemVariants}
+          className={`p-6 rounded-xl shadow-lg ${
+            darkMode 
+              ? "bg-gray-800 border border-gray-700" 
+              : "bg-white border border-blue-100"
+          }`}
+        >
+          <h2 className={`text-lg font-semibold mb-2 ${
+            darkMode ? "text-blue-300" : "text-blue-600"
+          }`}>Today's Appointments</h2>
+          <p className="text-3xl font-bold bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
+            {appointments.filter(a => 
+              new Date(a.appointmentDate).toLocaleDateString() === new Date().toLocaleDateString()
+            ).length}
           </p>
-        </div>
-        <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500"></div>
-      </div>
+          <p className={`text-sm mt-2 ${darkMode ? "text-gray-400" : "text-gray-500"}`}>
+            {new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+          </p>
+        </motion.div>
 
-      {/* Controls Section */}
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 -mt-6">
-        <div className={`rounded-lg shadow-xl p-6 mb-8 transition-all duration-300 ${
-          darkMode ? "bg-gray-800 border border-gray-700" : "bg-white border border-gray-200"
-        }`}>
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-            {/* Search Input */}
-            <div className="relative flex-grow max-w-md">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <Search className={`h-5 w-5 ${darkMode ? "text-gray-400" : "text-gray-500"}`} />
-              </div>
-              <input
-                type="text"
-                placeholder="Search patients or conditions..."
-                value={searchQuery}
-                onChange={handleSearchChange}
-                className={`pl-10 pr-4 py-3 w-full rounded-lg focus:ring-2 transition-all duration-300 ${
-                  darkMode 
-                    ? "bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:ring-indigo-500 focus:border-indigo-500" 
-                    : "bg-gray-50 border-gray-300 text-gray-900 placeholder-gray-500 focus:ring-indigo-600 focus:border-indigo-600"
-                }`}
-              />
-            </div>
-            
-            {/* Date Filter */}
-            <div className="relative max-w-xs">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <Calendar className={`h-5 w-5 ${darkMode ? "text-gray-400" : "text-gray-500"}`} />
-              </div>
-              <input
-                type="date"
-                id="filterDate"
-                value={filterDate}
-                onChange={handleFilterChange}
-                className={`pl-10 pr-4 py-3 w-full rounded-lg focus:ring-2 transition-all duration-300 ${
-                  darkMode 
-                    ? "bg-gray-700 border-gray-600 text-white focus:ring-indigo-500 focus:border-indigo-500" 
-                    : "bg-gray-50 border-gray-300 text-gray-900 focus:ring-indigo-600 focus:border-indigo-600"
-                }`}
-              />
-            </div>
-            
-            {/* View Toggle */}
-            <div className="flex items-center justify-end">
-              <button
-                onClick={toggleViewMode}
-                className={`flex items-center px-4 py-2 rounded-lg transition-all duration-300 ${
-                  darkMode
-                    ? "bg-gray-700 hover:bg-gray-600 text-white"
-                    : "bg-gray-100 hover:bg-gray-200 text-gray-800"
-                }`}
-              >
-                <span className="mr-2">View:</span>
-                <span className={`font-medium ${viewMode === "grid" ? "text-indigo-500" : ""}`}>
-                  {viewMode === "list" ? "List" : "Grid"}
-                </span>
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
+        <motion.div
+          variants={itemVariants}
+          className={`p-6 rounded-xl shadow-lg ${
+            darkMode 
+              ? "bg-gray-800 border border-gray-700" 
+              : "bg-white border border-blue-100"
+          }`}
+        >
+          <h2 className={`text-lg font-semibold mb-2 ${
+            darkMode ? "text-blue-300" : "text-blue-600"
+          }`}>Upcoming</h2>
+          <p className="text-3xl font-bold bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
+            {appointments.filter(a => 
+              new Date(a.appointmentDate) > new Date()
+            ).length}
+          </p>
+          <p className={`text-sm mt-2 ${darkMode ? "text-gray-400" : "text-gray-500"}`}>
+            Total upcoming appointments
+          </p>
+        </motion.div>
 
-      {/* Content Section */}
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
-        {isLoading ? (
-          // Loading State
-          <div className={`rounded-lg shadow-lg p-8 text-center ${
-            darkMode ? "bg-gray-800" : "bg-white"
-          }`}>
-            <div className="flex justify-center mb-4">
-              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
-            </div>
-            <p className={`text-lg ${darkMode ? "text-gray-300" : "text-gray-600"}`}>
-              Loading appointments...
-            </p>
+        <motion.div
+          variants={itemVariants}
+          className={`p-6 rounded-xl shadow-lg ${
+            darkMode 
+              ? "bg-gray-800 border border-gray-700" 
+              : "bg-white border border-blue-100"
+          }`}
+        >
+          <h2 className={`text-lg font-semibold mb-2 ${
+            darkMode ? "text-red-300" : "text-red-600"
+          }`}>High Priority</h2>
+          <p className="text-3xl font-bold bg-gradient-to-r from-red-400 to-red-500 bg-clip-text text-transparent">
+            {appointments.filter(a => a.priority === "High").length}
+          </p>
+          <p className={`text-sm mt-2 ${darkMode ? "text-gray-400" : "text-gray-500"}`}>
+            Requiring immediate attention
+          </p>
+        </motion.div>
+      </motion.div>
+
+      {/* Appointments Table */}
+      <motion.div
+        className={`p-6 rounded-xl shadow-lg ${
+          darkMode ? "bg-gray-800 border border-gray-700" : "bg-white border border-blue-100"
+        }`}
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.3 }}
+      >
+        <h2 className={`text-xl font-semibold mb-6 ${
+          darkMode ? "text-blue-300" : "text-blue-600"
+        }`}>Appointment Schedule</h2>
+        
+        {loading ? (
+          <div className="flex justify-center items-center h-64">
+            <div className={`animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 ${
+              darkMode ? "border-blue-400" : "border-blue-600"
+            }`}></div>
           </div>
-        ) : filteredAppointments.length === 0 ? (
-          // No Appointments State
-          <div className={`rounded-lg shadow-lg p-8 text-center ${
-            darkMode ? "bg-gray-800 border border-gray-700" : "bg-white border border-gray-200"
-          }`}>
-            <div className="py-12">
-              <Calendar className={`mx-auto h-16 w-16 mb-4 ${darkMode ? "text-gray-400" : "text-gray-500"}`} />
-              <h3 className={`text-xl font-medium mb-2 ${darkMode ? "text-gray-200" : "text-gray-800"}`}>
-                No appointments found
-              </h3>
-              <p className={`${darkMode ? "text-gray-400" : "text-gray-600"}`}>
-                {searchQuery || filterDate 
-                  ? "Try adjusting your filters to see more results." 
-                  : "There are no scheduled appointments at this time."}
-              </p>
-            </div>
-          </div>
-        ) : viewMode === "list" ? (
-          // List View
-          <div className={`rounded-lg shadow-lg overflow-hidden transition-all duration-300 ${
-            darkMode ? "bg-gray-800 border border-gray-700" : "bg-white border border-gray-200"
-          }`}>
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className={
-                    darkMode ? "bg-gray-700 text-gray-200" : "bg-gray-50 text-gray-700"
-                  }>
-                    <th className="px-6 py-4 text-left font-medium">Patient</th>
-                    <th className="px-6 py-4 text-left font-medium">Date</th>
-                    <th className="px-6 py-4 text-left font-medium">Time</th>
-                    <th className="px-6 py-4 text-left font-medium">Condition</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-700">
-                  {filteredAppointments.map((appointment) => (
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-left table-auto">
+              <thead>
+                <tr className={`text-sm uppercase tracking-wider ${
+                  darkMode ? "text-gray-400" : "text-gray-600"
+                }`}>
+                  <th className="px-6 py-3 border-b border-gray-600">Patient</th>
+                  <th className="px-6 py-3 border-b border-gray-600">Date</th>
+                  <th className="px-6 py-3 border-b border-gray-600">Time</th>
+                  <th className="px-6 py-3 border-b border-gray-600">Condition</th>
+                  <th className="px-6 py-3 border-b border-gray-600">Priority</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredAppointments.length > 0 ? (
+                  filteredAppointments.map((appointment) => (
                     <tr
                       key={appointment._id}
-                      onClick={() => handleAppointmentClick(appointment._id)}
-                      className={`cursor-pointer transition-colors duration-200 ${
+                      onClick={() => handleRowClick(appointment._id)}
+                      className={`cursor-pointer transition-all duration-200 ${
                         selectedPatientId === appointment._id
-                          ? darkMode 
-                              ? "bg-indigo-900 bg-opacity-50" 
-                              : "bg-indigo-50"
+                          ? "bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-md"
                           : darkMode
-                              ? "hover:bg-gray-700"
-                              : "hover:bg-gray-50"
+                          ? "hover:bg-gray-700"
+                          : "hover:bg-blue-50"
                       }`}
                     >
-                      <td className="px-6 py-4 whitespace-nowrap">
+                      <td className="px-6 py-4 border-b border-gray-600">
                         <div className="flex items-center">
-                          <div className={`flex-shrink-0 h-10 w-10 rounded-full flex items-center justify-center ${
-                            getAvatarColor(appointment.patient)
+                          <div className={`h-8 w-8 rounded-full flex items-center justify-center mr-3 ${
+                            darkMode ? "bg-gray-700" : "bg-blue-100"
                           }`}>
-                            {getInitials(patients[appointment.patient])}
+                            {patients[appointment.patient] 
+                              ? patients[appointment.patient].charAt(0) 
+                              : "?"}
                           </div>
-                          <div className="ml-4">
-                            <div className={`font-medium ${
-                              darkMode ? "text-white" : "text-gray-900"
-                            }`}>
-                              {patients[appointment.patient] || "Loading..."}
-                            </div>
+                          <div>
+                            <p className="font-medium">{patients[appointment.patient] || "Loading..."}</p>
+                            <p className={`text-xs ${darkMode ? "text-gray-400" : "text-gray-500"}`}>
+                              Patient ID: {appointment.patient.substring(appointment.patient.length - 4)}
+                            </p>
                           </div>
                         </div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex items-center">
-                          <Calendar className="mr-2 h-4 w-4 text-gray-400" />
-                          <span className={darkMode ? "text-gray-300" : "text-gray-700"}>
-                            {formatAppointmentDate(appointment.appointmentDate)}
-                          </span>
-                        </div>
+                      <td className="px-6 py-4 border-b border-gray-600">
+                        {new Date(appointment.appointmentDate).toLocaleDateString("en-US", {
+                          weekday: 'short',
+                          month: 'short',
+                          day: 'numeric'
+                        })}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex items-center">
-                          <Clock className="mr-2 h-4 w-4 text-gray-400" />
-                          <span className={darkMode ? "text-gray-300" : "text-gray-700"}>
-                            {formatAppointmentTime(appointment.appointmentDate)}
-                          </span>
-                        </div>
+                      <td className="px-6 py-4 border-b border-gray-600">
+                        {new Date(appointment.appointmentDate).toLocaleTimeString("en-US", {
+                          hour: '2-digit',
+                          minute: '2-digit'
+                        })}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                          getConditionColor(appointment.reason)
-                        }`}>
-                          {appointment.reason}
+                      <td className="px-6 py-4 border-b border-gray-600">
+                        {appointment.reason}
+                      </td>
+                      <td className="px-6 py-4 border-b border-gray-600">
+                        <span className={`px-2 py-1 text-xs rounded-full ${getPriorityBadgeClass(appointment.priority)}`}>
+                          {appointment.priority}
                         </span>
                       </td>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        ) : (
-          // Grid View
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredAppointments.map((appointment) => (
-              <div
-                key={appointment._id}
-                onClick={() => handleAppointmentClick(appointment._id)}
-                className={`cursor-pointer rounded-lg shadow-lg overflow-hidden transition-all duration-200 ${
-                  selectedPatientId === appointment._id
-                    ? darkMode 
-                        ? "ring-2 ring-indigo-500 bg-gray-800" 
-                        : "ring-2 ring-indigo-500 bg-white"
-                    : darkMode
-                        ? "bg-gray-800 hover:shadow-xl border border-gray-700" 
-                        : "bg-white hover:shadow-xl border border-gray-200"
-                }`}
-              >
-                <div className={`p-5 ${darkMode ? "border-b border-gray-700" : "border-b"}`}>
-                  <div className="flex items-center">
-                    <div className={`flex-shrink-0 h-12 w-12 rounded-full flex items-center justify-center ${
-                      getAvatarColor(appointment.patient)
-                    }`}>
-                      {getInitials(patients[appointment.patient])}
-                    </div>
-                    <div className="ml-4">
-                      <h3 className={`text-lg font-medium ${
-                        darkMode ? "text-white" : "text-gray-900"
-                      }`}>
-                        {patients[appointment.patient] || "Loading..."}
-                      </h3>
-                      <span className={`px-2 py-1 text-xs font-semibold rounded-full ${
-                        getConditionColor(appointment.reason)
-                      }`}>
-                        {appointment.reason}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-                <div className="px-5 py-4">
-                  <div className="flex items-center mb-2">
-                    <Calendar className={`h-5 w-5 mr-2 ${darkMode ? "text-gray-400" : "text-gray-500"}`} />
-                    <span className={darkMode ? "text-gray-200" : "text-gray-700"}>
-                      {formatAppointmentDate(appointment.appointmentDate)}
-                    </span>
-                  </div>
-                  <div className="flex items-center">
-                    <Clock className={`h-5 w-5 mr-2 ${darkMode ? "text-gray-400" : "text-gray-500"}`} />
-                    <span className={darkMode ? "text-gray-200" : "text-gray-700"}>
-                      {formatAppointmentTime(appointment.appointmentDate)}
-                    </span>
-                  </div>
-                </div>
-                <div className={`px-5 py-3 ${darkMode ? "bg-gray-700" : "bg-gray-50"}`}>
-                  <div className="flex justify-end">
-                    <button className={`px-3 py-1 rounded text-sm font-medium ${
-                      darkMode 
-                        ? "bg-indigo-600 hover:bg-indigo-700 text-white" 
-                        : "bg-indigo-100 hover:bg-indigo-200 text-indigo-700"
-                    }`}>
-                      View Details
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ))}
+                  ))
+                ) : (
+                  <tr>
+                    <td
+                      colSpan="5"
+                      className={`text-center py-8 ${
+                        darkMode ? "text-gray-400" : "text-gray-700"
+                      }`}
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 mx-auto mb-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      </svg>
+                      <p className="text-lg font-medium">No scheduled appointments found</p>
+                      <p className={`mt-1 ${darkMode ? "text-gray-500" : "text-gray-600"}`}>
+                        Try adjusting your filter or check back later
+                      </p>
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
           </div>
         )}
-        
-        {/* Appointment count summary */}
-        {filteredAppointments.length > 0 && (
-          <div className="mt-6 text-center">
-            <p className={darkMode ? "text-gray-400" : "text-gray-600"}>
-              Showing {filteredAppointments.length} {filteredAppointments.length === 1 ? "appointment" : "appointments"}
-              {filterDate && ` for ${new Date(filterDate).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}`}
-              {searchQuery && ` matching "${searchQuery}"`}
-            </p>
-          </div>
-        )}
-      </div>
+      </motion.div>
     </div>
   );
 };

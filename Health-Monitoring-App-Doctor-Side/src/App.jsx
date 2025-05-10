@@ -16,6 +16,7 @@ import EditProfile from "./pages/EditProfile";
 import LandingPage from "./pages/LandingPage";
 import Settings from "./pages/Settings";
 import PrescriptionForm from './pages/Prescriptions';
+import ContactUs from './pages/ContactUs'
 import AboutPage from './pages/AboutPage'; // ❗️About page is standalone
 import { DarkModeProvider } from "./Context/DarkModeContext";
 
@@ -49,6 +50,7 @@ function App() {
           <Route path="/login" element={<DoctorLogin />} />
           <Route path="/register" element={<DoctorRegister />} />
           <Route path="/about" element={<AboutPage />} /> {/* ✅ No layout */}
+          <Route path="/ContactUs" element={<ContactUs />} />
 
           {/* Pages Wrapped in MainLayout */}
           <Route path="/dashboard" element={<MainLayout><Dashboard /></MainLayout>} />
@@ -60,6 +62,7 @@ function App() {
           <Route path="/profile" element={<MainLayout><Profile /></MainLayout>} />
           <Route path="/profile/edit" element={<MainLayout><EditProfile /></MainLayout>} />
           <Route path="/settings" element={<MainLayout><Settings /></MainLayout>} />
+          
           <Route path="/prescription" element={<MainLayout><PrescriptionForm /></MainLayout>} />
 
           {/* Chatbot has optional Chat Sidebar */}
