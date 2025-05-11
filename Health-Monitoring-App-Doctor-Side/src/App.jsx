@@ -17,6 +17,7 @@ import LandingPage from "./pages/LandingPage";
 import Settings from "./pages/Settings";
 import PrescriptionForm from './pages/Prescriptions';
 import ContactUs from './pages/ContactUs'
+import Features from './pages/Features'
 import AboutPage from './pages/AboutPage'; // ❗️About page is standalone
 import { DarkModeProvider } from "./Context/DarkModeContext";
 
@@ -51,6 +52,7 @@ function App() {
           <Route path="/register" element={<DoctorRegister />} />
           <Route path="/about" element={<AboutPage />} /> {/* ✅ No layout */}
           <Route path="/ContactUs" element={<ContactUs />} />
+          <Route path="/Features" element={<Features/>} />
 
           {/* Pages Wrapped in MainLayout */}
           <Route path="/dashboard" element={<MainLayout><Dashboard /></MainLayout>} />
