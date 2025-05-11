@@ -18,7 +18,9 @@ import Settings from "./pages/Settings";
 import PrescriptionForm from './pages/Prescriptions';
 import ContactUs from './pages/ContactUs'
 import Features from './pages/Features'
+import Report from './pages/Report';
 import AboutPage from './pages/AboutPage'; // ❗️About page is standalone
+
 import { DarkModeProvider } from "./Context/DarkModeContext";
 
 function App() {
@@ -64,7 +66,7 @@ function App() {
           <Route path="/profile" element={<MainLayout><Profile /></MainLayout>} />
           <Route path="/profile/edit" element={<MainLayout><EditProfile /></MainLayout>} />
           <Route path="/settings" element={<MainLayout><Settings /></MainLayout>} />
-          
+          <Route path="/report" element={<Report />} />
           <Route path="/prescription" element={<MainLayout><PrescriptionForm /></MainLayout>} />
 
           {/* Chatbot has optional Chat Sidebar */}

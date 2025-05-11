@@ -155,6 +155,7 @@ const Dashboard = () => {
               <span>Prescription</span>
             </motion.button>
 
+            <Link to="/report">
             <motion.button
               className={`px-6 py-3 rounded-lg transition-all duration-300 shadow-md flex items-center gap-2 ${
                 darkMode 
@@ -167,6 +168,8 @@ const Dashboard = () => {
               <FaClipboardList className="text-lg" />
               <span>Reports</span>
             </motion.button>
+          </Link>
+
 
 
           </div>

@@ -62,7 +62,7 @@ const Chatbot = ({ chatId }) => {
         className={`flex-1 overflow-y-auto ${darkMode ? "bg-gray-800" : "bg-white"} rounded-lg p-4 space-y-3`}
       >
         {messages.length === 0 ? (
-          <p className={`text-center ${darkMode ? "text-gray-400" : "text-gray-600"}`}>
+          <p className={`pt-16 text-center ${darkMode ? "text-gray-400" : "text-gray-600"}`}>
             Start the conversation!
           </p>
         ) : (
