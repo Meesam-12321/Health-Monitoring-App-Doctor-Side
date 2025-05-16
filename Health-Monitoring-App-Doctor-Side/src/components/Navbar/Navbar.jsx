@@ -18,11 +18,13 @@ const Navbar = () => {
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5 }}
           >
-            <div className="flex items-center justify-center h-10 w-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 shadow-lg">
+            {/* Logo container - removed gradient background */}
+            <div className="flex items-center justify-center h-10 w-10 rounded-full">
               <img
-                src="/src/assets/images/logo.jpeg"
+                src="/src/assets/images/logo.jpg"
                 alt="DoctorApp Logo"
-                className="h-8 w-8 rounded-full invert"
+                className="h-8 w-8 rounded-full"
+                // Removed the invert class
               />
             </div>
             <span className="ml-3 text-xl font-bold bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">

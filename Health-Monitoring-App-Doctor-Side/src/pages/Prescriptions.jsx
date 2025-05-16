@@ -1,4 +1,5 @@
 import React, { useState, useContext } from 'react';
+import { useEffect } from 'react';
 import { Calendar, Printer, Plus, Trash2 } from 'lucide-react';
 import { DarkModeContext } from "../Context/DarkModeContext";
 
@@ -38,7 +39,98 @@ export default function PrescriptionForm() {
     advice: "",
     followUp: ""
   });
-
+  useEffect(() => {
+    // Create a style element
+    const style = document.createElement('style');
+    style.setAttribute('id', 'print-styles');
+    style.innerHTML = `
+      @media print {
+        /* Hide sidebar and other navigation elements */
+        nav, .sidebar, header, footer, .print-hidden, .print\\:hidden {
+          display: none !important;
+        }
+        
+        /* Full width for the prescription */
+        body, html {
+          width: 100% !important;
+          margin: 0 !important;
+          padding: 0 !important;
+          background-color: white !important;
+          font-size: 12pt !important;
+        }
+        
+        /* Reset main container styles for print */
+        .max-w-4xl {
+          max-width: 100% !important;
+          margin: 0 !important;
+          padding: 1.5cm 1cm !important;
+          box-shadow: none !important;
+          border: 1px solid #ddd !important;
+        }
+        
+        /* Fix backgrounds and text colors for printing */
+        * {
+          background-color: white !important;
+          color: black !important;
+          box-shadow: none !important;
+        }
+        
+        /* Better section spacing */
+        h1 {
+          font-size: 18pt !important;
+          margin-bottom: 0.5cm !important;
+          text-align: center !important;
+          border-bottom: 2px solid #000 !important;
+          padding-bottom: 0.25cm !important;
+        }
+        
+        h2 {
+          font-size: 14pt !important;
+          color: #000 !important;
+          margin-top: 0.5cm !important;
+          text-decoration: underline !important;
+        }
+        
+        /* Enhance form layout for print */
+        .border-b {
+          border-bottom: 1px solid #ccc !important;
+          padding-bottom: 0.3cm !important;
+          margin-bottom: 0.3cm !important;
+        }
+        
+        /* Add letterhead style */
+        .pt-24 {
+          padding-top: 0 !important;
+        }
+        
+        /* Style the signature area */
+        .mt-8 {
+          margin-top: 2cm !important;
+        }
+        
+        input, textarea, select {
+          border: none !important;
+          border-bottom: 1px solid #999 !important;
+          background: transparent !important;
+        }
+        
+        label {
+          font-weight: bold !important;
+        }
+      }
+    `;
+    
+    // Add the style to the document head
+    document.head.appendChild(style);
+    
+    // Clean up when component unmounts
+    return () => {
+      const styleElement = document.getElementById('print-styles');
+      if (styleElement) {
+        document.head.removeChild(styleElement);
+      }
+    };
+  }, []);
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({
@@ -83,6 +175,7 @@ export default function PrescriptionForm() {
   };
 
   const handlePrint = () => {
+    // You can add additional dynamic styling right before printing if needed
     window.print();
   };
 

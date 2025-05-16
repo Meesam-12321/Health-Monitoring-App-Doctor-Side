@@ -13,6 +13,7 @@ const DoctorRegister = () => {
         specialization: '',
         experience: '',
         contactNumber: '',
+        licenseNumber: '',
         clinicAddress: '',
         profileImage: null,
         bio: '',
@@ -65,6 +66,7 @@ const DoctorRegister = () => {
         } else if (!/^\d{10,15}$/.test(formData.contactNumber.replace(/[^0-9]/g, ''))) {
             newErrors.contactNumber = 'Enter a valid contact number';
         }
+        if (!formData.licenseNumber.trim()) newErrors.licenseNumber = 'License number is required';
         
         if (!formData.clinicAddress.trim()) newErrors.clinicAddress = 'Clinic address is required';
         
@@ -313,6 +315,22 @@ const DoctorRegister = () => {
                                 required
                             />
                             {errors.contactNumber && <p className="text-red-500 text-sm mt-1">{errors.contactNumber}</p>}
+                        </div>
+                        {/* License Number */}
+                        <div className="flex flex-col">
+                            <label htmlFor="licenseNumber" className={`font-medium mb-2 ${darkMode ? "text-gray-200" : "text-gray-700"}`}>
+                                License Number*
+                            </label>
+                            <input
+                                type="text"
+                                id="licenseNumber"
+                                name="licenseNumber"
+                                value={formData.licenseNumber}
+                                onChange={handleChange}
+                                className={`px-4 py-2 ${darkMode ? "bg-gray-700 text-gray-300" : "bg-gray-200 text-gray-700"} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400`}
+                                required
+                            />
+                            {errors.licenseNumber && <p className="text-red-500 text-sm mt-1">{errors.licenseNumber}</p>}
                         </div>
 
                         {/* Profile Image */}
