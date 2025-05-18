@@ -10,10 +10,10 @@ const Sidebar = () => {
 
   const menuItems = [
     { name: "Dashboard", path: "/dashboard", icon: <FaHome />, badge: null },
-    { name: "Appointments", path: "/appointments", icon: <FaCalendarAlt />, badge: 3 },
+    { name: "Appointments", path: "/appointments", icon: <FaCalendarAlt />, badge: null},
     { name: "Patients", path: "/patients", icon: <FaUserFriends />, badge: null },
-    { name: "Requests", path: "/appointmentRequests", icon: <FaEnvelope />, badge: 5 },
-    { name: "Chat", path: "/chat", icon: <FaComments />, badge: 2 },
+    { name: "Requests", path: "/appointmentRequests", icon: <FaEnvelope />, badge: null },
+    { name: "Chat", path: "/chat", icon: <FaComments />, badge: null },
     { name: "Chatbot", path: "/chatbot", icon: <FaRobot />, badge: null },
     { name: "Settings", path: "/settings", icon: <FaCog />, badge: null },
   ];

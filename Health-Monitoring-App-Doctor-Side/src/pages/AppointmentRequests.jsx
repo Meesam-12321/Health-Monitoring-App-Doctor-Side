@@ -293,10 +293,10 @@ const AppointmentRequests = () => {
                   </div>
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                  {/* <div className={`flex items-center ${darkMode ? "text-gray-400" : "text-gray-600"}`}>
+                  <div className={`flex items-center ${darkMode ? "text-gray-400" : "text-gray-600"}`}>
                   <FaClock className="mr-2" />
                   <span>Time: {request.appointmentDate ? new Date(request.appointmentDate).toLocaleTimeString() : "Not specified"}</span>
-                </div> */}
+                </div>
                       <div className={`flex items-center ${darkMode ? "text-gray-400" : "text-gray-600"}`}>
                       <FaClock className="mr-2" />
                       <span>Time: {request.appointmentDate ? new Date(request.appointmentDate).toLocaleTimeString() : "Not specified"}</span>

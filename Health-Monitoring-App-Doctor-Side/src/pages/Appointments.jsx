@@ -12,6 +12,7 @@ const Appointments = () => {
   const [patients, setPatients] = useState({});
   const [selectedPatientId, setSelectedPatientId] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const navigate = useNavigate();
 
@@ -31,240 +32,70 @@ const Appointments = () => {
     return token ? { Authorization: `Bearer ${token}` } : {};
   };
 
-  // Updated patient data with diverse names
-  const dashboardPatients = {
-    "patient1": "Emma Thompson",
-    "patient2": "Michael Chen",
-    "patient3": "Sophia Rodriguez",
-    "patient4": "William Jackson",
-    "patient5": "Olivia Kim",
-    "patient6": "James Patel",
-    "patient7": "Charlotte Lee",
-    "patient8": "Benjamin Wilson",
-    "patient9": "Isabella Johnson",
-    "patient10": "Henry Davis",
-    "patient11": "Amelia Martinez",
-    "patient12": "Alexander Smith"
-  };
-
-  // Mock appointment data based on dashboard patients
-  const generateMockAppointments = (doctorId) => {
-    const today = new Date();
-    const tomorrow = new Date(today);
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    
-    const conditions = [
-      {reason: "Diabetes Management", priority: "Medium"},
-      {reason: "Hypertension Follow-up", priority: "High"},
-      {reason: "Asthma Control", priority: "Medium"},
-      {reason: "Cardiac Assessment", priority: "High"},
-      {reason: "Migraine Treatment", priority: "Medium"},
-      {reason: "Arthritis Therapy", priority: "Low"},
-      {reason: "Annual Checkup", priority: "Low"},
-      {reason: "Allergy Consultation", priority: "Medium"},
-      {reason: "Spine Evaluation", priority: "High"},
-      {reason: "Chronic Headache", priority: "Medium"}
-    ];
-    
-    const mockAppointments = [
-      {
-        _id: "appt1",
-        patient: "patient1",
-        doctor: doctorId,
-        appointmentDate: new Date(today.setHours(9, 0, 0)).toISOString(),
-        reason: conditions[0].reason,
-        priority: conditions[0].priority,
-        status: "scheduled"
-      },
-      {
-        _id: "appt2",
-        patient: "patient2",
-        doctor: doctorId,
-        appointmentDate: new Date(today.setHours(10, 30, 0)).toISOString(),
-        reason: conditions[1].reason,
-        priority: conditions[1].priority,
-        status: "scheduled"
-      },
-      {
-        _id: "appt3",
-        patient: "patient3",
-        doctor: doctorId,
-        appointmentDate: new Date(today.setHours(11, 15, 0)).toISOString(),
-        reason: conditions[2].reason,
-        priority: conditions[2].priority,
-        status: "scheduled"
-      },
-      {
-        _id: "appt4",
-        patient: "patient4",
-        doctor: doctorId,
-        appointmentDate: new Date(today.setHours(13, 0, 0)).toISOString(),
-        reason: conditions[3].reason,
-        priority: conditions[3].priority,
-        status: "scheduled"
-      },
-      {
-        _id: "appt5",
-        patient: "patient5",
-        doctor: doctorId,
-        appointmentDate: new Date(today.setHours(14, 30, 0)).toISOString(),
-        reason: conditions[4].reason,
-        priority: conditions[4].priority,
-        status: "scheduled"
-      },
-      {
-        _id: "appt6",
-        patient: "patient6",
-        doctor: doctorId,
-        appointmentDate: new Date(today.setHours(15, 45, 0)).toISOString(),
-        reason: conditions[5].reason,
-        priority: conditions[5].priority,
-        status: "scheduled"
-      },
-      {
-        _id: "appt7",
-        patient: "patient7",
-        doctor: doctorId,
-        appointmentDate: new Date(tomorrow.setHours(9, 30, 0)).toISOString(),
-        reason: conditions[6].reason,
-        priority: conditions[6].priority,
-        status: "scheduled"
-      },
-      {
-        _id: "appt8",
-        patient: "patient8",
-        doctor: doctorId,
-        appointmentDate: new Date(tomorrow.setHours(11, 0, 0)).toISOString(),
-        reason: conditions[7].reason,
-        priority: conditions[7].priority,
-        status: "scheduled"
-      },
-      {
-        _id: "appt9",
-        patient: "patient9",
-        doctor: doctorId,
-        appointmentDate: new Date(tomorrow.setHours(13, 30, 0)).toISOString(),
-        reason: conditions[8].reason,
-        priority: conditions[8].priority,
-        status: "scheduled"
-      },
-      {
-        _id: "appt10",
-        patient: "patient10",
-        doctor: doctorId,
-        appointmentDate: new Date(tomorrow.setHours(14, 45, 0)).toISOString(),
-        reason: conditions[9].reason,
-        priority: conditions[9].priority,
-        status: "scheduled"
-      }
-    ];
-    
-    return mockAppointments;
-  };
-
   // Fetch appointments and patient data from backend
   useEffect(() => {
     const fetchAppointments = async () => {
       try {
         setLoading(true);
+        setError(null);
         const doctorId = getDoctorIdFromToken();
-        console.log("Doctor ID from Token:", doctorId);
-
+        
         if (!doctorId) {
-          console.log("No doctor ID found in token.");
-          setAppointments([]);
+          setError("No doctor ID found in token. Please log in again.");
           setLoading(false);
           return;
         }
 
-        // First try to fetch from API
-        let appointmentsData = [];
-        try {
-          const response = await axios.get(
-            "http://localhost:3000/api/appointments",
-            { headers: getAuthHeader() }
-          );
+        // Fetch appointments from API
+        const response = await axios.get(
+          "http://localhost:3000/api/appointments",
+          { headers: getAuthHeader() }
+        );
 
-          // Filter appointments based on doctor ID and status: "scheduled"
-          appointmentsData = response.data.filter(
-            (appointment) =>
-              appointment.doctor === doctorId && appointment.status === "scheduled"
-          );
-          
-          console.log("API Appointments:", appointmentsData);
-          
-          // If no appointments found via API or they don't match our dashboard patients,
-          // we'll supplement with mock data
-          if (appointmentsData.length === 0) {
-            throw new Error("No appointments found or API failed");
-          }
-          
-          // Check if we have patient data for each appointment
-          const hasAllPatientData = appointmentsData.every(appt => 
-            dashboardPatients[appt.patient] || patients[appt.patient]
-          );
-          
-          if (!hasAllPatientData) {
-            // Supplement with some mock data
-            const mockAppts = generateMockAppointments(doctorId);
-            appointmentsData = [...appointmentsData, ...mockAppts];
-          }
-        } catch (error) {
-          console.log("Using mock appointment data instead");
-          appointmentsData = generateMockAppointments(doctorId);
+        // Filter appointments based on doctor ID and status: "scheduled"
+        const appointmentsData = response.data.filter(
+          (appointment) =>
+            appointment.doctor === doctorId && appointment.status === "scheduled"
+        );
+        
+        if (appointmentsData.length === 0) {
+          setError("No appointments found for this doctor.");
         }
         
         setAppointments(appointmentsData);
-        console.log("Final Appointments:", appointmentsData);
-
-        // Create patient name mapping
+        
+        // Fetch patient data for each appointment
+        const patientIds = [...new Set(appointmentsData.map(appointment => appointment.patient))];
         const patientMap = {};
-        appointmentsData.forEach(appt => {
-          // If we have a dashboard patient that matches, use it
-          if (dashboardPatients[appt.patient]) {
-            patientMap[appt.patient] = dashboardPatients[appt.patient];
-          } else {
-            // Otherwise try to fetch from API
-            fetchPatientData(appt.patient);
+        
+        // Create an array of promises for patient data fetching
+        const patientPromises = patientIds.map(async (patientId) => {
+          try {
+            const patientResponse = await axios.get(
+              `http://localhost:3000/api/patients/${patientId}`,
+              { headers: getAuthHeader() }
+            );
+            return { id: patientId, name: patientResponse.data.name };
+          } catch (error) {
+            console.error(`Error fetching patient ${patientId}:`, error.message);
+            return { id: patientId, name: `Patient ${patientId.slice(-4)}` };
           }
+        });
+        
+        // Wait for all patient data to be fetched
+        const patientResults = await Promise.all(patientPromises);
+        
+        // Build patient mapping
+        patientResults.forEach(patient => {
+          patientMap[patient.id] = patient.name;
         });
         
         setPatients(patientMap);
         setLoading(false);
       } catch (error) {
-        console.error("Error setting up appointments:", error.message);
+        console.error("Error fetching appointments:", error);
+        setError("Failed to load appointments. Please try again later.");
         setLoading(false);
-      }
-    };
-
-    // Fetch a single patient's data
-    const fetchPatientData = async (patientId) => {
-      if (dashboardPatients[patientId]) {
-        // If we already have this patient in dashboard data, use that
-        setPatients(prev => ({
-          ...prev,
-          [patientId]: dashboardPatients[patientId]
-        }));
-        return;
-      }
-      
-      try {
-        const response = await axios.get(
-          `http://localhost:3000/api/patients/${patientId}`,
-          { headers: getAuthHeader() }
-        );
-        const patient = response.data;
-        setPatients(prev => ({
-          ...prev,
-          [patientId]: patient.name
-        }));
-      } catch (error) {
-        console.error(`Error fetching patient ${patientId}:`, error.message);
-        // Use a placeholder name if fetch fails
-        setPatients(prev => ({
-          ...prev,
-          [patientId]: `Patient ${patientId.slice(-4)}`
-        }));
       }
     };
 
@@ -484,6 +315,25 @@ const Appointments = () => {
             <div className={`animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 ${
               darkMode ? "border-blue-400" : "border-blue-600"
             }`}></div>
+          </div>
+        ) : error ? (
+          <div className={`flex flex-col items-center justify-center h-64 text-center ${
+            darkMode ? "text-gray-300" : "text-gray-700"
+          }`}>
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 mb-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+            <p className="text-lg font-medium">{error}</p>
+            <button 
+              onClick={() => window.location.reload()}
+              className={`mt-4 px-4 py-2 rounded-lg ${
+                darkMode 
+                  ? "bg-blue-600 hover:bg-blue-700 text-white" 
+                  : "bg-blue-500 hover:bg-blue-600 text-white"
+              }`}
+            >
+              Retry
+            </button>
           </div>
         ) : (
           <div className="overflow-x-auto">
