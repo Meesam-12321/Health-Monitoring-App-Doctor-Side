@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import { DarkModeContext } from "../Context/DarkModeContext";
 import { motion } from "framer-motion";
+import axios from "axios";
 
 const Dashboard = () => {
   const { darkMode } = useContext(DarkModeContext);
@@ -12,7 +13,46 @@ const Dashboard = () => {
   const [displayedText, setDisplayedText] = useState("");
   const [animationComplete, setAnimationComplete] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [appointments, setAppointments] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const typingSpeed = 100;
+  
+  // Helper function to check if a date is today
+  const isToday = (date) => {
+    const today = new Date();
+    return date.getDate() === today.getDate() &&
+      date.getMonth() === today.getMonth() &&
+      date.getFullYear() === today.getFullYear();
+  };
+
+  // Helper function to format appointment date for display
+  const formatAppointmentDate = (dateStr) => {
+    const date = new Date(dateStr);
+    
+    if (isToday(date)) {
+      return "Today";
+    }
+    
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    
+    if (date.getDate() === tomorrow.getDate() &&
+        date.getMonth() === tomorrow.getMonth() &&
+        date.getFullYear() === tomorrow.getFullYear()) {
+      return "Tomorrow";
+    }
+    
+    // For other dates, return formatted date
+    const options = { month: 'short', day: 'numeric' };
+    return date.toLocaleDateString(undefined, options);
+  };
+
+  // Helper function to format appointment time
+  const formatAppointmentTime = (dateStr) => {
+    const date = new Date(dateStr);
+    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  };
 
   useEffect(() => {
     // Only run the typing animation once and stop when complete
@@ -27,14 +67,48 @@ const Dashboard = () => {
     }
   }, [displayedText, animationComplete]);
 
+  // Fetch appointments from the API
+  useEffect(() => {
+    const fetchAppointments = async () => {
+      try {
+        setLoading(true);
+        const token = localStorage.getItem("authToken");
+        
+        if (!token) {
+          throw new Error("Authentication token not found");
+        }
+        
+        // Note: Check if this API endpoint is correct - you have "appointmentss" with double 's'
+        const response = await axios.get("http://localhost:3000/api/appointments", {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+        
+        // Sort appointments by date and time
+        const sortedAppointments = response.data.sort((a, b) => 
+          new Date(a.appointmentDate) - new Date(b.appointmentDate)
+        );
+        
+        setAppointments(sortedAppointments);
+        setLoading(false);
+      } catch (err) {
+        console.error("Error fetching appointments:", err);
+        setError("Failed to load appointments");
+        setLoading(false);
+      }
+    };
+
+    fetchAppointments();
+  }, []);
+
   // Updated statistics with more realistic figures
   const stats = [
     { title: "Total Patients", value: 4, icon: <FaUserFriends />, color: darkMode ? "from-blue-400 to-blue-600" : "from-blue-400 to-blue-600" },
-    { title: "Appointments Today", value: 10, icon: <FaCalendarAlt />, color: darkMode ? "from-blue-400 to-blue-600" : "from-blue-400 to-blue-600" },
+    { title: "Appointments Today", value: appointments.filter(appt => isToday(new Date(appt.appointmentDate))).length, icon: <FaCalendarAlt />, color: darkMode ? "from-blue-400 to-blue-600" : "from-blue-400 to-blue-600" },
     { title: "Pending Alerts", value: 10, icon: <FaBell />, color: darkMode ? "from-blue-400 to-blue-600" : "from-blue-400 to-blue-600" },
     { title: "Prescriptions Issued", value: 2, icon: <FaFileMedical />, color: darkMode ? "from-blue-400 to-blue-600" : "from-blue-400 to-blue-600" },
   ];
-  
 
   // Updated patients without wearable references
   const patients = [
@@ -46,19 +120,6 @@ const Dashboard = () => {
     { id: 6, name: "Farhad", age: 62, condition: "Arthritis", status: "Improving", lastVisit: "4 days ago" },
   ];
 
-  // Expanded list of upcoming appointments
-  const upcomingAppointments = [
-    { id: 1, patient: "Faria", time: "08:30 AM", date: "Today" },
-    { id: 2, patient: "Esha", time: "09:15 AM", date: "Today" },
-    { id: 3, patient: "Raheel", time: "10:00 AM", date: "Today" },
-    { id: 4, patient: "Aleena Sehar", time: "11:30 AM", date: "Today" },
-    { id: 5, patient: "Areej", time: "01:00 PM", date: "Today" },
-    { id: 6, patient: "Mustafa", time: "02:30 PM", date: "Today" },
-    { id: 7, patient: "Marij", time: "03:15 PM", date: "Today" },
-    { id: 8, patient: "Abdullah", time: "04:00 PM", date: "Today" },
-    { id: 9, patient: "Asma", time: "09:00 AM", date: "Tomorrow" },
-    { id: 10, patient: "Arshad", time: "10:30 AM", date: "Tomorrow" },
-  ];
   const filteredPatients = patients.filter(patient => 
     patient.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     patient.condition.toLowerCase().includes(searchTerm.toLowerCase())
@@ -169,9 +230,6 @@ const Dashboard = () => {
               <span>Reports</span>
             </motion.button>
           </Link>
-
-
-
           </div>
         </div>
 
@@ -197,7 +255,7 @@ const Dashboard = () => {
           ))}
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-          {/* Upcoming Appointments - with show all functionality */}
+          {/* Upcoming Appointments - with real data from API */}
           <motion.div 
             className={`p-6 rounded-xl shadow-lg col-span-1 ${
               darkMode 
@@ -211,28 +269,57 @@ const Dashboard = () => {
             <h2 className={`text-xl font-bold mb-4 flex items-center gap-2 ${darkMode ? 'text-sky-300' : 'text-blue-800'}`}>
               <FaCalendarAlt /> Today's Appointments
             </h2>
-            <div className="space-y-3">
-              {/* Show limited appointments initially */}
-              {upcomingAppointments.slice(0, 5).map((appointment) => (
-                <motion.div
-                  key={appointment.id}
-                  className={`p-4 rounded-lg ${
-                    darkMode 
-                      ? 'bg-gray-700/80 border border-gray-600' 
-                      : 'bg-blue-50'
-                  } shadow-sm`}
-                  whileHover={{ scale: 1.02 }}
-                >
-                  <div className="flex justify-between">
-                    <h3 className="font-semibold">{appointment.patient}</h3>
-                    <span className={`px-2 py-1 rounded-full text-xs ${appointment.date === "Today" ? "bg-green-500 text-white" : "bg-blue-500 text-white"}`}>
-                      {appointment.date}
-                    </span>
-                  </div>
-                  <p className={`text-sm mt-1 ${darkMode ? 'text-sky-300' : 'text-blue-600'}`}>{appointment.time}</p>
-                </motion.div>
-              ))}
-            </div>
+            
+            {loading ? (
+              <div className="flex justify-center items-center h-32">
+                <div className={`animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 ${darkMode ? 'border-sky-500' : 'border-blue-500'}`}></div>
+              </div>
+            ) : error ? (
+              <div className={`p-4 rounded-lg text-center ${darkMode ? 'bg-red-900/20 text-red-300' : 'bg-red-100 text-red-600'}`}>
+                <p>{error}</p>
+              </div>
+            ) : appointments.length === 0 ? (
+              <div className={`p-4 rounded-lg text-center ${darkMode ? 'bg-gray-700/60' : 'bg-blue-50/60'}`}>
+                <p>No upcoming appointments</p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {/* Show scheduled appointments only */}
+                {appointments
+                  .filter(appt => appt.status === "scheduled")
+                  .slice(0, 5)
+                  .map((appointment, index) => (
+                    <motion.div
+                      key={index}
+                      className={`p-4 rounded-lg ${
+                        darkMode 
+                          ? 'bg-gray-700/80 border border-gray-600' 
+                          : 'bg-blue-50'
+                      } shadow-sm`}
+                      whileHover={{ scale: 1.02 }}
+                    >
+                      <div className="flex justify-between">
+                        <h3 className="font-semibold">{appointment.patientName}</h3>
+                        <span className={`px-2 py-1 rounded-full text-xs ${
+                          formatAppointmentDate(appointment.appointmentDate) === "Today" 
+                            ? "bg-green-500 text-white" 
+                            : "bg-blue-500 text-white"
+                        }`}>
+                          {formatAppointmentDate(appointment.appointmentDate)}
+                        </span>
+                      </div>
+                      <p className={`text-sm mt-1 ${darkMode ? 'text-sky-300' : 'text-blue-600'}`}>
+                        {formatAppointmentTime(appointment.appointmentDate)}
+                      </p>
+                      <p className={`text-xs mt-1 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                        {appointment.reason && appointment.reason.length > 30 
+                          ? `${appointment.reason.substring(0, 30)}...` 
+                          : appointment.reason}
+                      </p>
+                    </motion.div>
+                  ))}
+              </div>
+            )}
             
             <Link 
               to="/appointments"

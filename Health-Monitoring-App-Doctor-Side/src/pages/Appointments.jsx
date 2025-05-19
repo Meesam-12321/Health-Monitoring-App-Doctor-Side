@@ -52,44 +52,98 @@ const Appointments = () => {
           { headers: getAuthHeader() }
         );
 
-        // Filter appointments based on doctor ID and status: "scheduled"
+        console.log("All appointments:", response.data);
+
+        // Get current date at the start of the day
+        const currentDate = new Date();
+        currentDate.setHours(0, 0, 0, 0);
+
+        // Filter appointments based on doctor ID, status: "scheduled", and date >= today
         const appointmentsData = response.data.filter(
           (appointment) =>
-            appointment.doctor === doctorId && appointment.status === "scheduled"
+            appointment.doctor === doctorId && 
+            appointment.status === "scheduled" &&
+            new Date(appointment.appointmentDate) >= currentDate
         );
         
+        console.log("Filtered appointments:", appointmentsData);
+        
         if (appointmentsData.length === 0) {
-          setError("No appointments found for this doctor.");
+          setError("No upcoming appointments found for this doctor.");
         }
+
+        // Extract patientName if it exists directly in the appointment data
+        const appointmentsWithProcessedData = appointmentsData.map(appointment => {
+          // Set default priority if not provided
+          if (!appointment.priority) {
+            appointment.priority = "Medium";
+          }
+          return appointment;
+        });
         
-        setAppointments(appointmentsData);
+        setAppointments(appointmentsWithProcessedData);
         
-        // Fetch patient data for each appointment
-        const patientIds = [...new Set(appointmentsData.map(appointment => appointment.patient))];
+        // Create a map of patient IDs to patient names
         const patientMap = {};
         
-        // Create an array of promises for patient data fetching
-        const patientPromises = patientIds.map(async (patientId) => {
-          try {
-            const patientResponse = await axios.get(
-              `http://localhost:3000/api/patients/${patientId}`,
-              { headers: getAuthHeader() }
-            );
-            return { id: patientId, name: patientResponse.data.name };
-          } catch (error) {
-            console.error(`Error fetching patient ${patientId}:`, error.message);
-            return { id: patientId, name: `Patient ${patientId.slice(-4)}` };
+        // First, check if appointmentsData already has patientName field
+        appointmentsWithProcessedData.forEach(appointment => {
+          if (appointment.patientName && appointment.patient) {
+            patientMap[appointment.patient] = appointment.patientName;
           }
         });
         
-        // Wait for all patient data to be fetched
-        const patientResults = await Promise.all(patientPromises);
+        // For any patients without names, fetch them from the API
+        const patientIdsToFetch = appointmentsWithProcessedData
+          .filter(appointment => !patientMap[appointment.patient])
+          .map(appointment => appointment.patient);
         
-        // Build patient mapping
-        patientResults.forEach(patient => {
-          patientMap[patient.id] = patient.name;
-        });
+        // Remove duplicates
+        const uniquePatientIds = [...new Set(patientIdsToFetch)];
         
+        console.log("Patient IDs to fetch:", uniquePatientIds);
+        
+        if (uniquePatientIds.length > 0) {
+          // Create an array of promises for patient data fetching
+          const patientPromises = uniquePatientIds.map(async (patientId) => {
+            try {
+              const patientResponse = await axios.get(
+                `http://localhost:3000/api/patients/${patientId}`,
+                { headers: getAuthHeader() }
+              );
+              
+              console.log(`Patient data for ID ${patientId}:`, patientResponse.data);
+              
+              // Handle different possible response structures
+              let patientName = `Patient ${patientId.slice(-4)}`;
+              
+              if (patientResponse.data) {
+                if (patientResponse.data.name) {
+                  patientName = patientResponse.data.name;
+                } else if (patientResponse.data.firstName && patientResponse.data.lastName) {
+                  patientName = `${patientResponse.data.firstName} ${patientResponse.data.lastName}`;
+                } else if (patientResponse.data.patient && patientResponse.data.patient.name) {
+                  patientName = patientResponse.data.patient.name;
+                }
+              }
+              
+              return { id: patientId, name: patientName };
+            } catch (error) {
+              console.error(`Error fetching patient ${patientId}:`, error.message);
+              return { id: patientId, name: `Patient ${patientId.slice(-4)}` };
+            }
+          });
+          
+          // Wait for all patient data to be fetched
+          const patientResults = await Promise.all(patientPromises);
+          
+          // Build patient mapping
+          patientResults.forEach(patient => {
+            patientMap[patient.id] = patient.name;
+          });
+        }
+        
+        console.log("Final patient map:", patientMap);
         setPatients(patientMap);
         setLoading(false);
       } catch (error) {
@@ -148,7 +202,22 @@ const Appointments = () => {
     }
   };
 
+  // Get patient first initial for the avatar
+  const getPatientInitial = (patientId) => {
+    const patientName = patients[patientId];
+    if (!patientName) return "?";
+    return patientName.charAt(0).toUpperCase();
+  }
+
   const filteredAppointments = getFilteredAppointments();
+
+  // Get current date for today's heading
+  const todayDate = new Date().toLocaleDateString('en-US', { 
+    weekday: 'long', 
+    year: 'numeric', 
+    month: 'long', 
+    day: 'numeric' 
+  });
 
   // Animation variants for components
   const containerVariants = {
@@ -190,7 +259,7 @@ const Appointments = () => {
       >
         <h1 className="text-4xl font-bold text-center">
           <span className="bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
-            Appointments
+            Upcoming Appointments
           </span>
         </h1>
       </motion.div>
@@ -226,6 +295,7 @@ const Appointments = () => {
             id="filterDate"
             value={filterDate}
             onChange={handleFilterChange}
+            min={new Date().toISOString().split('T')[0]} // Set minimum date to today
             className={`p-3 w-full rounded-lg ${
               darkMode
                 ? "bg-gray-700 text-white border border-gray-600 focus:ring-blue-500 focus:border-blue-500"
@@ -252,7 +322,7 @@ const Appointments = () => {
             ).length}
           </p>
           <p className={`text-sm mt-2 ${darkMode ? "text-gray-400" : "text-gray-500"}`}>
-            {new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+            {todayDate}
           </p>
         </motion.div>
 
@@ -266,14 +336,14 @@ const Appointments = () => {
         >
           <h2 className={`text-lg font-semibold mb-2 ${
             darkMode ? "text-blue-300" : "text-blue-600"
-          }`}>Upcoming</h2>
+          }`}>Future Appointments</h2>
           <p className="text-3xl font-bold bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
             {appointments.filter(a => 
-              new Date(a.appointmentDate) > new Date()
+              new Date(a.appointmentDate).toLocaleDateString() > new Date().toLocaleDateString()
             ).length}
           </p>
           <p className={`text-sm mt-2 ${darkMode ? "text-gray-400" : "text-gray-500"}`}>
-            Total upcoming appointments
+            Beyond today
           </p>
         </motion.div>
 
@@ -368,14 +438,14 @@ const Appointments = () => {
                           <div className={`h-8 w-8 rounded-full flex items-center justify-center mr-3 ${
                             darkMode ? "bg-gray-700" : "bg-blue-100"
                           }`}>
-                            {patients[appointment.patient] 
-                              ? patients[appointment.patient].charAt(0) 
-                              : "?"}
+                            {appointment.patient ? getPatientInitial(appointment.patient) : "?"}
                           </div>
                           <div>
-                            <p className="font-medium">{patients[appointment.patient] || "Loading..."}</p>
+                            <p className="font-medium">
+                              {appointment.patientName || patients[appointment.patient] || "Loading..."}
+                            </p>
                             <p className={`text-xs ${darkMode ? "text-gray-400" : "text-gray-500"}`}>
-                              Patient ID: {appointment.patient.substring(appointment.patient.length - 4)}
+                              Patient ID: {appointment.patient ? appointment.patient.substring(appointment.patient.length - 4) : "N/A"}
                             </p>
                           </div>
                         </div>
@@ -394,11 +464,11 @@ const Appointments = () => {
                         })}
                       </td>
                       <td className="px-6 py-4 border-b border-gray-600">
-                        {appointment.reason}
+                        {appointment.reason || "No reason provided"}
                       </td>
                       <td className="px-6 py-4 border-b border-gray-600">
-                        <span className={`px-2 py-1 text-xs rounded-full ${getPriorityBadgeClass(appointment.priority)}`}>
-                          {appointment.priority}
+                        <span className={`px-2 py-1 text-xs rounded-full ${getPriorityBadgeClass(appointment.priority || "Medium")}`}>
+                          {appointment.priority || "Medium"}
                         </span>
                       </td>
                     </tr>
@@ -414,7 +484,7 @@ const Appointments = () => {
                       <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 mx-auto mb-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                       </svg>
-                      <p className="text-lg font-medium">No scheduled appointments found</p>
+                      <p className="text-lg font-medium">No upcoming appointments found</p>
                       <p className={`mt-1 ${darkMode ? "text-gray-500" : "text-gray-600"}`}>
                         Try adjusting your filter or check back later
                       </p>

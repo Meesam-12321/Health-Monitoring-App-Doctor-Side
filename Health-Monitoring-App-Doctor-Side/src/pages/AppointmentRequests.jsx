@@ -2,16 +2,16 @@ import React, { useEffect, useState, useContext } from "react";
 import { FaCheck, FaTimes, FaCalendarAlt, FaClock, FaExclamationCircle } from "react-icons/fa";
 import { jwtDecode } from "jwt-decode";
 import axios from "axios";
-import { DarkModeContext } from "../Context/DarkModeContext"; // Import DarkModeContext
+import { DarkModeContext } from "../Context/DarkModeContext";
 
 const AppointmentRequests = () => {
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [notification, setNotification] = useState({ show: false, message: "", type: "" });
-  const { darkMode } = useContext(DarkModeContext); // Use DarkModeContext
+  const { darkMode } = useContext(DarkModeContext);
 
-  // Show notification function (similar to DoctorRegister)
+  // Show notification function
   const showNotification = (message, type) => {
     setNotification({ show: true, message, type });
     
@@ -62,14 +62,12 @@ const AppointmentRequests = () => {
         
         console.log("Fetched all appointments:", response.data);
 
-        // Filter appointments by doctorId and status 'pending' instead of 'canceled'
-        // Change this filter based on your actual API's status for appointment requests
+        // Filter appointments by doctorId and relevant statuses
         const filteredAppointments = response.data.filter(
           (appointment) =>
             appointment.doctor === doctorId && 
             (appointment.status === "pending" || appointment.status === "requested" || appointment.status === "canceled")
         );
-        console.log(response.data)
         
         console.log("Filtered Appointments:", filteredAppointments);
 
@@ -79,9 +77,26 @@ const AppointmentRequests = () => {
           return;
         }
 
-        // Fetch patient names for each filtered appointment
+        // Use patientName directly from the appointment if available
+        const appointmentsWithNames = filteredAppointments.map(appointment => {
+          // If patientName is already in the appointment object, use it directly
+          if (appointment.patientName) {
+            return appointment;
+          }
+          
+          // Otherwise, return the appointment with a promise to fetch the name
+          return appointment;
+        });
+
+        // For any appointments that don't have a patientName, fetch it
         const enrichedAppointments = await Promise.all(
-          filteredAppointments.map(async (appointment) => {
+          appointmentsWithNames.map(async (appointment) => {
+            // If we already have the patient name, return as is
+            if (appointment.patientName) {
+              console.log(`Using provided patientName: ${appointment.patientName} for ID: ${appointment.patient}`);
+              return appointment;
+            }
+            
             try {
               if (!appointment.patient) {
                 console.error("Appointment has no patient ID:", appointment);
@@ -97,20 +112,28 @@ const AppointmentRequests = () => {
                 }
               );
               
-              if (!patientResponse.data || !patientResponse.data.name) {
-                console.warn(`Patient data incomplete for ID ${appointment.patient}:`, patientResponse.data);
+              console.log(`Patient data response for ID ${appointment.patient}:`, patientResponse.data);
+              
+              if (!patientResponse.data) {
                 return { ...appointment, patientName: "Unknown" };
               }
               
-              console.log(
-                `Fetched patient data for ID ${appointment.patient}:`,
-                patientResponse.data
-              );
-
+              // Check for the name in different possible locations in the response
+              let patientName = "Unknown";
+              if (patientResponse.data.name) {
+                patientName = patientResponse.data.name;
+              } else if (patientResponse.data.firstName && patientResponse.data.lastName) {
+                patientName = `${patientResponse.data.firstName} ${patientResponse.data.lastName}`;
+              } else if (patientResponse.data.patient && patientResponse.data.patient.name) {
+                patientName = patientResponse.data.patient.name;
+              }
+              
+              console.log(`Resolved patient name to: ${patientName}`);
+              
               // Append patient name to the appointment
               return {
                 ...appointment,
-                patientName: patientResponse.data.name,
+                patientName: patientName
               };
             } catch (error) {
               console.error(
@@ -139,19 +162,16 @@ const AppointmentRequests = () => {
     try {
       console.log(`Accept button clicked for appointment ID: ${appointmentId}`);
       
-      // Retrieve the auth token
       const authToken = localStorage.getItem("authToken");
   
-      // Check if the token is present
       if (!authToken) {
         setError("Authentication token is missing. Please log in again.");
         return;
       }
   
-      // Make a PATCH request to update the appointment status
       const response = await axios.patch(
         `http://localhost:3000/api/appointments/${appointmentId}`,
-        { status: "scheduled" },  // Changing status to 'scheduled'
+        { status: "scheduled" },
         {
           headers: {
             Authorization: `Bearer ${authToken}`,
@@ -162,7 +182,6 @@ const AppointmentRequests = () => {
   
       console.log("Appointment accepted successfully:", response.data);
   
-      // Update the state by removing the accepted appointment from the list
       setRequests((prevRequests) =>
         prevRequests.filter((request) => request._id !== appointmentId)
       );
@@ -195,7 +214,6 @@ const AppointmentRequests = () => {
       );
       console.log("Appointment rejected successfully:", response.data);
   
-      // Remove the rejected appointment from the list
       setRequests((prevRequests) =>
         prevRequests.filter((request) => request._id !== appointmentId)
       );
@@ -205,6 +223,27 @@ const AppointmentRequests = () => {
       console.error("Error rejecting appointment:", error.response || error.message);
       showNotification(`Failed to reject the appointment: ${error.response?.data?.message || error.message}`, "error");
     }
+  };
+
+  // Helper function to format date nicely
+  const formatDate = (dateString) => {
+    if (!dateString) return "Not specified";
+    const date = new Date(dateString);
+    return date.toLocaleDateString(undefined, { 
+      year: 'numeric', 
+      month: 'long', 
+      day: 'numeric' 
+    });
+  };
+
+  // Helper function to format time nicely
+  const formatTime = (dateString) => {
+    if (!dateString) return "Not specified";
+    const date = new Date(dateString);
+    return date.toLocaleTimeString(undefined, {
+      hour: '2-digit',
+      minute: '2-digit'
+    });
   };
 
   // Helper function to get status badge color
@@ -236,7 +275,7 @@ const AppointmentRequests = () => {
       <div className={`min-h-screen flex justify-center items-center ${darkMode ? "bg-gray-900" : "bg-gray-100"}`}>
         <div className={`${darkMode ? "bg-red-900/50" : "bg-red-100"} p-6 rounded-lg shadow-lg max-w-lg w-full`}>
           <div className="flex items-center mb-4">
-            <FaExclamationCircle className={`h-6 w-6 pt-10 ${darkMode ? "text-red-400" : "text-red-600"} mr-3`} />
+            <FaExclamationCircle className={`h-6 w-6 ${darkMode ? "text-red-400" : "text-red-600"} mr-3`} />
             <h2 className={`text-xl font-bold ${darkMode ? "text-red-400" : "text-red-600"}`}>Error</h2>
           </div>
           <p className={darkMode ? "text-white" : "text-gray-800"}>{error}</p>
@@ -249,7 +288,7 @@ const AppointmentRequests = () => {
     <div className={`min-h-screen flex flex-col items-center py-10 px-4 pt-16 ${darkMode ? "bg-gray-900" : "bg-gray-100"}`}>
       {/* Custom notification */}
       {notification.show && (
-        <div className={`fixed top-4 pt-16 right-4 p-4 rounded-lg shadow-lg ${
+        <div className={`fixed top-4 right-4 p-4 rounded-lg shadow-lg ${
           notification.type === 'success' ? 'bg-green-500' : 'bg-red-500'
         } text-white z-50 transition-opacity duration-300`}>
           {notification.message}
@@ -281,10 +320,10 @@ const AppointmentRequests = () => {
                 <div className="p-6">
                   <div className="flex flex-col md:flex-row justify-between md:items-center mb-4">
                     <h2 className={`text-2xl font-semibold ${darkMode ? "text-white" : "text-gray-800"} mb-2 md:mb-0`}>
-                      {request.patientName}
+                      {request.patientName || "Unknown Patient"}
                     </h2>
                     <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(request.status)}`}>
-                      {request.status?.charAt(0).toUpperCase() + request.status?.slice(1)}
+                      {request.status?.charAt(0).toUpperCase() + request.status?.slice(1) || "Status Unknown"}
                     </span>
                   </div>
                   
@@ -293,13 +332,13 @@ const AppointmentRequests = () => {
                   </div>
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                  <div className={`flex items-center ${darkMode ? "text-gray-400" : "text-gray-600"}`}>
-                  <FaClock className="mr-2" />
-                  <span>Time: {request.appointmentDate ? new Date(request.appointmentDate).toLocaleTimeString() : "Not specified"}</span>
-                </div>
-                      <div className={`flex items-center ${darkMode ? "text-gray-400" : "text-gray-600"}`}>
+                    <div className={`flex items-center ${darkMode ? "text-gray-400" : "text-gray-600"}`}>
+                      <FaCalendarAlt className="mr-2" />
+                      <span>Date: {formatDate(request.appointmentDate)}</span>
+                    </div>
+                    <div className={`flex items-center ${darkMode ? "text-gray-400" : "text-gray-600"}`}>
                       <FaClock className="mr-2" />
-                      <span>Time: {request.appointmentDate ? new Date(request.appointmentDate).toLocaleTimeString() : "Not specified"}</span>
+                      <span>Time: {formatTime(request.appointmentDate)}</span>
                     </div>
                   </div>
                   
