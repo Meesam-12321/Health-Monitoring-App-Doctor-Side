@@ -14,8 +14,11 @@ const Dashboard = () => {
   const [animationComplete, setAnimationComplete] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [appointments, setAppointments] = useState([]);
+  const [patients, setPatients] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [patientsLoading, setPatientsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [patientsError, setPatientsError] = useState(null);
   const typingSpeed = 100;
   
   // Helper function to check if a date is today
@@ -59,6 +62,62 @@ const Dashboard = () => {
   const formatAppointmentTime = (dateStr) => {
     const date = new Date(dateStr);
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  };
+
+  // Helper function to determine patient status based on condition
+  const determinePatientStatus = (condition) => {
+    // Simple logic to determine status based on condition
+    const conditionLower = condition ? condition.toLowerCase() : '';
+    
+    if (conditionLower.includes('critical') || 
+        conditionLower.includes('severe') || 
+        conditionLower.includes('heart disease')) {
+      return "Critical";
+    } else if (conditionLower.includes('review') || 
+               conditionLower.includes('asthma') || 
+               conditionLower.includes('needs attention')) {
+      return "Needs Review";
+    } else if (conditionLower.includes('improving') || 
+               conditionLower.includes('hypertension') || 
+               conditionLower.includes('better')) {
+      return "Improving";
+    } else {
+      return "Stable";
+    }
+  };
+
+  // Helper function to format last visit date
+  const formatLastVisit = (createdAt) => {
+    if (!createdAt) return "N/A";
+    
+    const visitDate = new Date(createdAt);
+    const today = new Date();
+    
+    if (isToday(visitDate)) {
+      return "Today";
+    }
+    
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    
+    if (visitDate.getDate() === yesterday.getDate() &&
+        visitDate.getMonth() === yesterday.getMonth() &&
+        visitDate.getFullYear() === yesterday.getFullYear()) {
+      return "Yesterday";
+    }
+    
+    const diffTime = Math.abs(today - visitDate);
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    if (diffDays <= 7) {
+      return `${diffDays} days ago`;
+    } else if (diffDays <= 30) {
+      const weeks = Math.floor(diffDays / 7);
+      return `${weeks} week${weeks > 1 ? 's' : ''} ago`;
+    } else {
+      const months = Math.floor(diffDays / 30);
+      return `${months} month${months > 1 ? 's' : ''} ago`;
+    }
   };
 
   useEffect(() => {
@@ -117,28 +176,80 @@ const Dashboard = () => {
     fetchAppointments();
   }, []);
 
-  // Updated statistics with more realistic figures
+  // Fetch patients from the API
+  useEffect(() => {
+    const fetchPatients = async () => {
+      try {
+        setPatientsLoading(true);
+        const token = localStorage.getItem("authToken");
+        
+        if (!token) {
+          throw new Error("Authentication token not found");
+        }
+        
+        const response = await axios.get("http://localhost:3000/api/patients", {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+        
+        // Format patient data for display
+        const formattedPatients = response.data.map(patient => ({
+          id: patient._id,
+          name: patient.name,
+          age: patient.age,
+          condition: patient.condition || "General Checkup",
+          status: determinePatientStatus(patient.condition),
+          lastVisit: formatLastVisit(patient.createdAt),
+          gender: patient.gender
+        }));
+        
+        // Sort patients by most recent visit (keeping the same sorting as we had in dummy data)
+        const sortedPatients = formattedPatients.sort((a, b) => {
+          // Prioritize "Today", "Yesterday", then by number of days
+          if (a.lastVisit === "Today") return -1;
+          if (b.lastVisit === "Today") return 1;
+          if (a.lastVisit === "Yesterday") return -1;
+          if (b.lastVisit === "Yesterday") return 1;
+          
+          // For others, try to compare numerically if possible
+          const aDays = a.lastVisit.match(/(\d+)/);
+          const bDays = b.lastVisit.match(/(\d+)/);
+          
+          if (aDays && bDays) {
+            // If both have numerical values, compare them
+            return parseInt(aDays[0]) - parseInt(bDays[0]);
+          }
+          
+          // Fallback to alphabetical comparison
+          return a.lastVisit.localeCompare(b.lastVisit);
+        });
+        
+        setPatients(sortedPatients);
+        setPatientsLoading(false);
+      } catch (err) {
+        console.error("Error fetching patients:", err);
+        setPatientsError("Failed to load patients");
+        setPatientsLoading(false);
+      }
+    };
+
+    fetchPatients();
+  }, []);
+
+  // Filter patients based on search term
+  const filteredPatients = patients.filter(patient => 
+    patient.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (patient.condition && patient.condition.toLowerCase().includes(searchTerm.toLowerCase()))
+  );
+
+  // Updated statistics with actual patient count
   const stats = [
-    { title: "Total Patients", value: 4, icon: <FaUserFriends />, color: darkMode ? "from-blue-400 to-blue-600" : "from-blue-400 to-blue-600" },
+    { title: "Total Patients", value: patients.length, icon: <FaUserFriends />, color: darkMode ? "from-blue-400 to-blue-600" : "from-blue-400 to-blue-600" },
     { title: "Appointments Today", value: appointments.filter(appt => isToday(new Date(appt.appointmentDate))).length, icon: <FaCalendarAlt />, color: darkMode ? "from-blue-400 to-blue-600" : "from-blue-400 to-blue-600" },
     { title: "Pending Alerts", value: 10, icon: <FaBell />, color: darkMode ? "from-blue-400 to-blue-600" : "from-blue-400 to-blue-600" },
     { title: "Prescriptions Issued", value: 2, icon: <FaFileMedical />, color: darkMode ? "from-blue-400 to-blue-600" : "from-blue-400 to-blue-600" },
   ];
-
-  // Updated patients without wearable references
-  const patients = [
-    { id: 1, name: "Aleena Sehar", age: 21, condition: "Diabetes", status: "Stable", lastVisit: "2 days ago" },
-    { id: 2, name: "Meesam Imran", age: 38, condition: "Hypertension", status: "Improving", lastVisit: "1 week ago" },
-    { id: 3, name: "Mudasser Raza", age: 29, condition: "Asthma", status: "Needs Review", lastVisit: "3 days ago" },
-    { id: 4, name: "Adnan Bashir", age: 50, condition: "Heart Disease", status: "Critical", lastVisit: "Today" },
-    { id: 5, name: "Sonia", age: 45, condition: "Migraine", status: "Stable", lastVisit: "Yesterday" },
-    { id: 6, name: "Farhad", age: 62, condition: "Arthritis", status: "Improving", lastVisit: "4 days ago" },
-  ];
-
-  const filteredPatients = patients.filter(patient => 
-    patient.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    patient.condition.toLowerCase().includes(searchTerm.toLowerCase())
-  );
 
   const handleChatNavigation = () => {
     const token = localStorage.getItem("authToken");
@@ -348,7 +459,7 @@ const Dashboard = () => {
             </Link>
           </motion.div>
 
-          {/* Patients Section - with limited preview and view all functionality */}
+          {/* Patients Section - Now using actual patient data from API */}
           <motion.div 
             className={`p-6 rounded-xl shadow-lg col-span-1 lg:col-span-2 ${
               darkMode 
@@ -362,10 +473,23 @@ const Dashboard = () => {
             <h2 className={`text-xl font-bold mb-4 flex items-center gap-2 ${darkMode ? 'text-sky-300' : 'text-blue-800'}`}>
               <FaUserFriends /> Recent Patients
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {filteredPatients.length > 0 ? (
-                // Only show up to 4 patients in the dashboard
-                filteredPatients.slice(0, 4).map((patient) => (
+            
+            {patientsLoading ? (
+              <div className="flex justify-center items-center h-32">
+                <div className={`animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 ${darkMode ? 'border-sky-500' : 'border-blue-500'}`}></div>
+              </div>
+            ) : patientsError ? (
+              <div className={`p-4 rounded-lg text-center ${darkMode ? 'bg-red-900/20 text-red-300' : 'bg-red-100 text-red-600'}`}>
+                <p>{patientsError}</p>
+              </div>
+            ) : filteredPatients.length === 0 ? (
+              <div className={`col-span-2 p-8 text-center rounded-lg ${darkMode ? 'bg-gray-700/60' : 'bg-blue-50/60'}`}>
+                <p className="text-lg font-medium">No patients match your search</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Only show up to 4 patients in the dashboard */}
+                {filteredPatients.slice(0, 4).map((patient) => (
                   <motion.div 
                     key={patient.id} 
                     className={`p-4 rounded-lg ${
@@ -379,7 +503,7 @@ const Dashboard = () => {
                       <div>
                         <h3 className="font-semibold text-lg">{patient.name}</h3>
                         <p className="text-sm">Age: {patient.age}</p>
-                        <p className="text-sm">Condition: {patient.condition}</p>
+                        <p className="text-sm">Condition: {patient.condition || "General Checkup"}</p>
                         <p className={`text-xs mt-1 ${darkMode ? 'text-sky-300' : 'text-blue-600'}`}>Last visit: {patient.lastVisit}</p>
                       </div>
                       <span className={`px-2 py-1 rounded-full text-xs ${
@@ -404,13 +528,9 @@ const Dashboard = () => {
                       </Link>
                     </div>
                   </motion.div>
-                ))
-              ) : (
-                <div className={`col-span-2 p-8 text-center rounded-lg ${darkMode ? 'bg-gray-700/60' : 'bg-blue-50/60'}`}>
-                  <p className="text-lg font-medium">No patients match your search</p>
-                </div>
-              )}
-            </div>
+                ))}
+              </div>
+            )}
             
             <Link 
               to="/patients"
