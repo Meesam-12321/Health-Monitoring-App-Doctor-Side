@@ -26,6 +26,13 @@ const Dashboard = () => {
       date.getFullYear() === today.getFullYear();
   };
 
+  // Helper function to check if a date is in the future (including today)
+  const isCurrentOrFuture = (date) => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Set to beginning of day for proper comparison
+    return date >= today;
+  };
+
   // Helper function to format appointment date for display
   const formatAppointmentDate = (dateStr) => {
     const date = new Date(dateStr);
@@ -78,15 +85,23 @@ const Dashboard = () => {
           throw new Error("Authentication token not found");
         }
         
-        // Note: Check if this API endpoint is correct - you have "appointmentss" with double 's'
         const response = await axios.get("http://localhost:3000/api/appointments", {
           headers: {
             Authorization: `Bearer ${token}`
           }
         });
         
+        // Filter out past appointments and sort the remaining by date and time
+        const currentDate = new Date();
+        currentDate.setHours(0, 0, 0, 0); // Set to beginning of day for proper comparison
+        
+        const filteredAppointments = response.data.filter(appointment => {
+          const appointmentDate = new Date(appointment.appointmentDate);
+          return isCurrentOrFuture(appointmentDate);
+        });
+        
         // Sort appointments by date and time
-        const sortedAppointments = response.data.sort((a, b) => 
+        const sortedAppointments = filteredAppointments.sort((a, b) => 
           new Date(a.appointmentDate) - new Date(b.appointmentDate)
         );
         
@@ -255,7 +270,7 @@ const Dashboard = () => {
           ))}
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-          {/* Upcoming Appointments - with real data from API */}
+          {/* Upcoming Appointments - with real data from API and filtered for current/future dates */}
           <motion.div 
             className={`p-6 rounded-xl shadow-lg col-span-1 ${
               darkMode 
@@ -267,7 +282,7 @@ const Dashboard = () => {
             transition={{ delay: 0.2 }}
           >
             <h2 className={`text-xl font-bold mb-4 flex items-center gap-2 ${darkMode ? 'text-sky-300' : 'text-blue-800'}`}>
-              <FaCalendarAlt /> Today's Appointments
+              <FaCalendarAlt /> Upcoming Appointments
             </h2>
             
             {loading ? (
@@ -284,7 +299,7 @@ const Dashboard = () => {
               </div>
             ) : (
               <div className="space-y-3">
-                {/* Show scheduled appointments only */}
+                {/* Show scheduled appointments only for current and future dates */}
                 {appointments
                   .filter(appt => appt.status === "scheduled")
                   .slice(0, 5)
