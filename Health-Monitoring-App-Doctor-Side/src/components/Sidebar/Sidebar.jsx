@@ -1,18 +1,53 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
 import { FaHome, FaCalendarAlt, FaUserFriends, FaComments, FaCog, FaRobot, FaEnvelope, FaChevronRight } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
 import { DarkModeContext } from "../../Context/DarkModeContext";
+import axios from "axios";
 
 const Sidebar = () => {
   const { darkMode } = useContext(DarkModeContext);
   const [hoveredItem, setHoveredItem] = useState(null);
+  const [appointmentCount, setAppointmentCount] = useState(0);
+  const [requestCount, setRequestCount] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Fetch appointment counts and request counts
+  useEffect(() => {
+    const fetchNotificationCounts = async () => {
+      setIsLoading(true);
+      try {
+        // Fetch upcoming appointments count
+        const appointmentsResponse = await axios.get('http://localhost:3000/api/appointments/');
+        const upcomingAppointments = appointmentsResponse.data.filter(
+          appointment => new Date(appointment.date) >= new Date()
+        );
+        setAppointmentCount(upcomingAppointments.length);
+        
+        // Fetch appointment requests count
+        const requestsResponse = await axios.get('http://localhost:3000/api/appointmentRequests/');
+        setRequestCount(requestsResponse.data.length);
+      } catch (error) {
+        console.error("Error fetching notification counts:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchNotificationCounts();
+    
+    // Set up an interval to refresh the counts every 5 minutes
+    const intervalId = setInterval(fetchNotificationCounts, 5 * 60 * 1000);
+    
+    // Clean up the interval when component unmounts
+    return () => clearInterval(intervalId);
+  }, []);
 
   const menuItems = [
     { name: "Dashboard", path: "/dashboard", icon: <FaHome />, badge: null },
-    { name: "Appointments", path: "/appointments", icon: <FaCalendarAlt />, badge: null},
+    { name: "Appointments", path: "/appointments", icon: <FaCalendarAlt />, badge: appointmentCount > 0 ? appointmentCount : null },
     { name: "Patients", path: "/patients", icon: <FaUserFriends />, badge: null },
-    { name: "Requests", path: "/appointmentRequests", icon: <FaEnvelope />, badge: null },
+    { name: "Requests", path: "/appointmentRequests", icon: <FaEnvelope />, badge: requestCount > 0 ? requestCount : null },
     { name: "Chat", path: "/chat", icon: <FaComments />, badge: null },
     { name: "Chatbot", path: "/chatbot", icon: <FaRobot />, badge: null },
     { name: "Settings", path: "/settings", icon: <FaCog />, badge: null },
@@ -103,14 +138,18 @@ const Sidebar = () => {
                     </div>
                     
                     <div className="flex items-center z-10">
-                      {item.badge && (
-                        <span className={`px-2 py-0.5 rounded-full text-xs font-bold 
-                          ${darkMode 
-                            ? "bg-blue-500/80 text-white" 
-                            : "bg-blue-500 text-white"}`
-                        }>
-                          {item.badge}
-                        </span>
+                      {item.badge !== null && (
+                        <motion.span 
+                          initial={{ scale: 0.8, opacity: 0 }}
+                          animate={{ scale: 1, opacity: 1 }}
+                          className={`px-2 py-0.5 rounded-full text-xs font-bold flex items-center justify-center min-w-[20px] h-5
+                            ${darkMode 
+                              ? "bg-red-500 text-white" 
+                              : "bg-red-500 text-white"}`
+                          }
+                        >
+                          {isLoading ? "..." : item.badge}
+                        </motion.span>
                       )}
                       
                       <AnimatePresence>

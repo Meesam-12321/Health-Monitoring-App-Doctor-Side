@@ -66,7 +66,7 @@ const AppointmentRequests = () => {
         const filteredAppointments = response.data.filter(
           (appointment) =>
             appointment.doctor === doctorId && 
-            (appointment.status === "pending" || appointment.status === "requested" || appointment.status === "canceled")
+            (appointment.status === "pending" || appointment.status === "requested" || appointment.status === "cancelled")
         );
         
         console.log("Filtered Appointments:", filteredAppointments);
